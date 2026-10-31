@@ -1,0 +1,115 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "title": "Nature & Environment Practice",
+  "duration": 15,
+  "type": "practice",
+  "level": "medium",
+  "questions": [
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a52"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a53"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a54"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a55"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a56"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a57"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a58"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a59"
+    }
+  ],
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a36"
+  },
+  "skills": [
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a41"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a40"
+    }
+  ],
+  "createdBy": {
+    "$oid": "6a26c404d4f0999dd0bf7a48"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.686Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.686Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "title": "TOEIC Vocabulary Starter Challenge",
+  "duration": 20,
+  "type": "quiz",
+  "level": "medium",
+  "questions": [
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a52"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a53"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a54"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a55"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a56"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a57"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a58"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a59"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a5d"
+    }
+  ],
+  "certificate": {
+    "$oid": "6a26c404d4f0999dd0bf7a3c"
+  },
+  "skills": [
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a41"
+    },
+    {
+      "$oid": "6a26c404d4f0999dd0bf7a43"
+    }
+  ],
+  "createdBy": {
+    "$oid": "6a26c404d4f0999dd0bf7a46"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.689Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.689Z"
+  },
+  "__v": 0
+}]

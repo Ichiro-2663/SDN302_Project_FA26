@@ -1,0 +1,70 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a40"
+  },
+  "name": "Grammar",
+  "description": "Tenses, structures, syntax, and sentence formations.",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "name": "Vocabulary",
+  "description": "Word meanings, definitions, synonyms, and collocations.",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a42"
+  },
+  "name": "Listening",
+  "description": "Audio comprehension, dialogues, and audio prompts.",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a43"
+  },
+  "name": "Reading",
+  "description": "Comprehension passages, article analysis, and speed reading.",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a44"
+  },
+  "name": "Writing",
+  "description": "Sentence correction, essay formats, and structured drafting.",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.555Z"
+  }
+}]

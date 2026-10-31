@@ -1,0 +1,40 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a96"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4a"
+  },
+  "itemType": "Exam",
+  "itemId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "notes": "Great exam to review grammar.",
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.707Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.707Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a95"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4a"
+  },
+  "itemType": "Question",
+  "itemId": {
+    "$oid": "6a26c404d4f0999dd0bf7a52"
+  },
+  "notes": "Remember to review carbon dioxide greenhouse explanation.",
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.706Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.706Z"
+  },
+  "__v": 0
+}]

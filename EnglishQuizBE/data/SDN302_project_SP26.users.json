@@ -1,0 +1,205 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a46"
+  },
+  "name": "Admin User",
+  "email": "admin@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Admin",
+  "age": 30,
+  "address": "Hanoi",
+  "school": "FPT University",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.662Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.662Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a48"
+  },
+  "name": "Teacher Alice",
+  "email": "teacher@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Teacher",
+  "age": 28,
+  "address": "HCMC",
+  "school": "FPT Academy",
+  "teacherProfile": {
+    "specialization": [
+      "IELTS Reading",
+      "TOEIC Grammar"
+    ],
+    "experienceYears": 5,
+    "bio": "Experienced IELTS tutor with band 8.5 overall."
+  },
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.666Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.666Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a4a"
+  },
+  "name": "Student Bob",
+  "email": "student@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Student",
+  "age": 20,
+  "address": "Danang",
+  "school": "BKU",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "studentProfile": {
+    "targetCertificate": "IELTS",
+    "targetScore": "7.0"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.669Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.669Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a4c"
+  },
+  "name": "Student 001",
+  "email": "student1@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Student",
+  "age": 19,
+  "address": "Danang",
+  "school": "FPT University",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "studentProfile": {
+    "targetCertificate": "TOEIC",
+    "targetScore": "650"
+  },
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.672Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.672Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a4d"
+  },
+  "name": "Student 002",
+  "email": "student2@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Student",
+  "age": 20,
+  "address": "Danang",
+  "school": "FPT University",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "studentProfile": {
+    "targetCertificate": "TOEIC",
+    "targetScore": "650"
+  },
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.672Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.672Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a4e"
+  },
+  "name": "Student 003",
+  "email": "student3@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Student",
+  "age": 21,
+  "address": "Danang",
+  "school": "FPT University",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "studentProfile": {
+    "targetCertificate": "TOEIC",
+    "targetScore": "650"
+  },
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.673Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.673Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a4f"
+  },
+  "name": "Student 004",
+  "email": "student4@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Student",
+  "age": 22,
+  "address": "Danang",
+  "school": "FPT University",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "studentProfile": {
+    "targetCertificate": "TOEIC",
+    "targetScore": "650"
+  },
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.673Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.673Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a50"
+  },
+  "name": "Student 005",
+  "email": "student5@gmail.com",
+  "password": "$2b$10$M6k8No3IzcH0h9kz6O5zf.sN4Tl2wgnB.3aidmR0Wg7ayYNKtUj1y",
+  "role": "Student",
+  "age": 23,
+  "address": "Danang",
+  "school": "FPT University",
+  "teacherProfile": {
+    "specialization": []
+  },
+  "studentProfile": {
+    "targetCertificate": "TOEIC",
+    "targetScore": "650"
+  },
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.673Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.673Z"
+  }
+}]

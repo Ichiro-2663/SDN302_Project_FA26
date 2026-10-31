@@ -1,0 +1,486 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a66"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4a"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "score": 2,
+  "total": 4,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a67"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a68"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a54",
+      "selectedAnswer": "1",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a69"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a6a"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4a"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "score": 3,
+  "total": 3,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a6b"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a6c"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a6d"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4c"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "score": 2,
+  "total": 4,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a6e"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a6f"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a54",
+      "selectedAnswer": "1",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a70"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a71"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4c"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "score": 3,
+  "total": 3,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a72"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a73"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.698Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a74"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4d"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "score": 2,
+  "total": 4,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a75"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a76"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a54",
+      "selectedAnswer": "1",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a77"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a78"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4d"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "score": 3,
+  "total": 3,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a79"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a7a"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a7b"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4e"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "score": 2,
+  "total": 4,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a7c"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a7d"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a54",
+      "selectedAnswer": "1",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a7e"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a7f"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4e"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "score": 3,
+  "total": 3,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a80"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a81"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a82"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4f"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "score": 2,
+  "total": 4,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a83"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a84"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a54",
+      "selectedAnswer": "1",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a85"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a86"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a4f"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "score": 3,
+  "total": 3,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a87"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a88"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a89"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a50"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a64"
+  },
+  "score": 2,
+  "total": 4,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a8a"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a8b"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a54",
+      "selectedAnswer": "1",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a8c"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a8d"
+  },
+  "userId": {
+    "$oid": "6a26c404d4f0999dd0bf7a50"
+  },
+  "examId": {
+    "$oid": "6a26c404d4f0999dd0bf7a62"
+  },
+  "score": 3,
+  "total": 3,
+  "status": "PASSED",
+  "answers": [
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a52",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a8e"
+      }
+    },
+    {
+      "questionId": "6a26c404d4f0999dd0bf7a53",
+      "selectedAnswer": "0",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a8f"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.699Z"
+  }
+}]

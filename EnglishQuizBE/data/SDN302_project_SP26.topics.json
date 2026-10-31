@@ -1,0 +1,75 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a36"
+  },
+  "name": "Environment",
+  "description": "Nature, pollution, climate change, and ecology vocabulary.",
+  "slug": "environment",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.542Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.542Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a37"
+  },
+  "name": "Pets & Animals",
+  "description": "Domestic pets, wildlife, biology, and animal behaviors.",
+  "slug": "pets-animals",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.543Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.543Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a38"
+  },
+  "name": "Technology",
+  "description": "Computers, software, Internet, and innovations in the modern world.",
+  "slug": "technology",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.543Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.543Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a39"
+  },
+  "name": "Health & Medicine",
+  "description": "Human anatomy, diseases, healthy habits, and medical treatments.",
+  "slug": "health-medicine",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.543Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.543Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a3a"
+  },
+  "name": "Travel & Culture",
+  "description": "Tourism, transport, traditions, countries, and outdoor activities.",
+  "slug": "travel-culture",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.544Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.544Z"
+  }
+}]

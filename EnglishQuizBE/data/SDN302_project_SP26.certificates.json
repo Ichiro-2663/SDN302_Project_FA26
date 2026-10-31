@@ -1,0 +1,48 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a3c"
+  },
+  "name": "TOEIC",
+  "description": "Test of English for International Communication.",
+  "format": "Listening & Reading (200 questions)",
+  "maxScore": 990,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.551Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.551Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a3d"
+  },
+  "name": "IELTS",
+  "description": "International English Language Testing System.",
+  "format": "Academic & General Training (4 modules)",
+  "maxScore": 9,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.551Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.551Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a3e"
+  },
+  "name": "VSTEP",
+  "description": "Vietnamese Standardized Test of English Proficiency.",
+  "format": "Level 3-5 (B1-C1 equivalent)",
+  "maxScore": 10,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.551Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.551Z"
+  }
+}]

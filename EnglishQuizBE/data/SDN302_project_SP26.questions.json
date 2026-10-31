@@ -1,0 +1,306 @@
+[{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a52"
+  },
+  "content": "What is the primary cause of global warming?",
+  "options": [
+    "Carbon dioxide emissions",
+    "Solar wind cycles",
+    "Deep ocean currents",
+    "Volcanic ash eruptions"
+  ],
+  "correctAnswer": 0,
+  "level": "medium",
+  "questionType": "MultipleChoice",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a36"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "certificate": {
+    "$oid": "6a26c404d4f0999dd0bf7a3d"
+  },
+  "explanation": "Carbon dioxide (CO2) is a greenhouse gas that traps heat in the atmosphere, primary driving global warming.",
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a53"
+  },
+  "content": "Complete the sentence: If we ___ protect wildlife, many species will go extinct.",
+  "options": [
+    "don't",
+    "won't",
+    "didn't",
+    "haven't"
+  ],
+  "correctAnswer": 0,
+  "level": "easy",
+  "questionType": "MultipleChoice",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a36"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a40"
+  },
+  "explanation": "First conditional uses Present Simple in the 'if'-clause.",
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a54"
+  },
+  "content": "TOEIC stands for Test of English for International ___.",
+  "options": [
+    "Communication",
+    "Community",
+    "Commerce",
+    "Commission"
+  ],
+  "correctAnswer": 0,
+  "level": "easy",
+  "questionType": "MultipleChoice",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a3a"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "certificate": {
+    "$oid": "6a26c404d4f0999dd0bf7a3c"
+  },
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a55"
+  },
+  "content": "A small domesticated carnivorous mammal with soft fur, a short snout, and retractile claws is called a ___(singular, lowercase).",
+  "options": [],
+  "correctAnswer": "cat",
+  "level": "easy",
+  "questionType": "FillInBlank",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a37"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "explanation": "The definition perfectly describes a cat.",
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a56"
+  },
+  "content": "We must reduce our carbon footprint by using public transport instead of personal ___.",
+  "options": [],
+  "correctAnswer": "cars",
+  "level": "medium",
+  "questionType": "FillInBlank",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a36"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "explanation": "Plural noun 'cars' fits best for public transport comparison.",
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a57"
+  },
+  "content": "IELTS Academic is typically taken by candidates looking to study in an English-speaking environment.",
+  "options": [],
+  "correctAnswer": "true",
+  "level": "easy",
+  "questionType": "TrueFalse",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a3a"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a43"
+  },
+  "certificate": {
+    "$oid": "6a26c404d4f0999dd0bf7a3d"
+  },
+  "explanation": "True. Academic IELTS is for students seeking higher education abroad.",
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a58"
+  },
+  "content": "Computers only operate using decimal numbers.",
+  "options": [],
+  "correctAnswer": "false",
+  "level": "easy",
+  "questionType": "TrueFalse",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a38"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "explanation": "False. Computers operate in binary code (zeros and ones).",
+  "matchingPairs": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.682Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.682Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a59"
+  },
+  "content": "Match the following animal groups with their definitions:",
+  "options": [
+    "Mammals",
+    "Birds",
+    "Reptiles"
+  ],
+  "correctAnswer": [
+    0,
+    1,
+    2
+  ],
+  "level": "medium",
+  "questionType": "Matching",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a37"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "matchingPairs": [
+    {
+      "left": "Mammals",
+      "right": "Warm-blooded vertebrates that give birth to live young",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a5a"
+      }
+    },
+    {
+      "left": "Birds",
+      "right": "Feathered vertebrates that lay eggs and can fly",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a5b"
+      }
+    },
+    {
+      "left": "Reptiles",
+      "right": "Cold-blooded vertebrates with dry scaly skin",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a5c"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.682Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.682Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a26c404d4f0999dd0bf7a5d"
+  },
+  "content": "Match the computer terms with their descriptions:",
+  "options": [
+    "CPU",
+    "RAM",
+    "Hard Drive"
+  ],
+  "correctAnswer": [
+    0,
+    1,
+    2
+  ],
+  "level": "hard",
+  "questionType": "Matching",
+  "topic": {
+    "$oid": "6a26c404d4f0999dd0bf7a38"
+  },
+  "skill": {
+    "$oid": "6a26c404d4f0999dd0bf7a41"
+  },
+  "matchingPairs": [
+    {
+      "left": "CPU",
+      "right": "The central processor, acting as the brain of the computer",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a5e"
+      }
+    },
+    {
+      "left": "RAM",
+      "right": "Temporary short-term high-speed memory storage",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a5f"
+      }
+    },
+    {
+      "left": "Hard Drive",
+      "right": "Permanent long-term storage device for data",
+      "_id": {
+        "$oid": "6a26c404d4f0999dd0bf7a60"
+      }
+    }
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-06-08T13:30:44.682Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T13:30:44.682Z"
+  }
+}]

@@ -1,0 +1,203 @@
+[
+  {
+    "_id": {
+      "$oid": "6a26c404d4f0999dd0bf7a92"
+    },
+    "userId": {
+      "$oid": "6a26c404d4f0999dd0bf7a4a"
+    },
+    "type": "vocabulary",
+    "word": "Feline",
+    "definition": "Relating to or affecting cats or other members of the cat family.",
+    "example": "She has feline characteristics.",
+    "pronunciation": "/ˈfiːlaɪn/",
+    "topic": {
+      "$oid": "6a26c404d4f0999dd0bf7a37"
+    },
+    "box": 2,
+    "nextReviewDate": {
+      "$date": "2026-06-11T13:30:44.703Z"
+    },
+    "createdAt": {
+      "$date": "2026-06-08T13:30:44.704Z"
+    },
+    "updatedAt": {
+      "$date": "2026-06-08T13:30:44.704Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6a26c404d4f0999dd0bf7a91"
+    },
+    "userId": {
+      "$oid": "6a26c404d4f0999dd0bf7a4a"
+    },
+    "type": "vocabulary",
+    "word": "Biodiversity",
+    "definition": "The variety of plant and animal life in the world or in a particular habitat.",
+    "example": "The forest boasts a rich biodiversity.",
+    "pronunciation": "/ˌbaɪoʊdaɪˈvɜːrsəti/",
+    "topic": {
+      "$oid": "6a26c404d4f0999dd0bf7a36"
+    },
+    "box": 1,
+    "nextReviewDate": {
+      "$date": "2026-06-08T13:30:44.703Z"
+    },
+    "createdAt": {
+      "$date": "2026-06-08T13:30:44.704Z"
+    },
+    "updatedAt": {
+      "$date": "2026-06-08T13:30:44.704Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6a26c4bfa6914593593e16d4"
+    },
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "vocabulary",
+    "word": "Hello",
+    "definition": "Xin chXin chao",
+    "example": "Hello, how are you?",
+    "pronunciation": "/he-loh/",
+    "topic": {
+      "$oid": "6a26c404d4f0999dd0bf7a36"
+    },
+    "box": 1,
+    "nextReviewDate": {
+      "$date": "2026-06-08T13:33:51.292Z"
+    },
+    "createdAt": {
+      "$date": "2026-06-08T13:33:51.293Z"
+    },
+    "updatedAt": {
+      "$date": "2026-06-08T13:33:51.293Z"
+    },
+    "__v": 0
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "grammar",
+    "word": "Present Perfect",
+    "definition": "S + have/has + V3/ed",
+    "example": "I have lived here for 5 years.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "grammar",
+    "word": "Passive Voice",
+    "definition": "S + be + V3/ed",
+    "example": "The letter was sent yesterday.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "grammar",
+    "word": "Conditional Type 1",
+    "definition": "If + Present Simple, will + V",
+    "example": "If it rains, I will stay home.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "common_mistake",
+    "word": "He enjoy playing football.",
+    "definition": "He enjoys playing football.",
+    "example": "Third-person singular verbs require s/es.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "common_mistake",
+    "word": "She don't like coffee.",
+    "definition": "She doesn't like coffee.",
+    "example": "Use doesn't with he/she/it.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "common_mistake",
+    "word": "I am agree with you.",
+    "definition": "I agree with you.",
+    "example": "Agree is a verb, not an adjective.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "collocation",
+    "word": "Make a decision",
+    "definition": "Đưa ra quyết định",
+    "example": "You should make a decision soon.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "collocation",
+    "word": "Take responsibility",
+    "definition": "Chịu trách nhiệm",
+    "example": "He took responsibility for the mistake.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "collocation",
+    "word": "Heavy traffic",
+    "definition": "Giao thông đông đúc",
+    "example": "There was heavy traffic this morning.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "idiom",
+    "word": "Break the ice",
+    "definition": "Phá vỡ sự ngại ngùng ban đầu",
+    "example": "He told a joke to break the ice.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "idiom",
+    "word": "Piece of cake",
+    "definition": "Rất dễ dàng",
+    "example": "The test was a piece of cake.",
+    "box": 1
+  },
+  {
+    "userId": {
+      "$oid": "6a3f8b12e9d45c7a91f2b8d4"
+    },
+    "type": "idiom",
+    "word": "Hit the books",
+    "definition": "Chăm chỉ học tập",
+    "example": "I need to hit the books before the exam.",
+    "box": 1
+  }
+]
