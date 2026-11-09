@@ -1,0 +1,167 @@
+/* ==========================================================================
+   ExamComposer.css — Kombai-Inspired Matrix Composer Styles
+   ========================================================================== */
+
+.exam-composer-card {
+  border-radius: var(--radius-card, 24px) !important;
+  border: 1px solid rgba(226, 232, 240, 0.85) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
+}
+
+.composer-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #ffedd5;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.composer-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.composer-input {
+  border-radius: 12px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  padding: 10px 14px !important;
+  font-size: 14.5px !important;
+  color: #0f172a !important;
+  transition: all 0.2s ease !important;
+}
+
+.composer-input:focus {
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15) !important;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+/* Step 2: Matrix Config Box */
+.matrix-config-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+}
+
+.matrix-tier-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.matrix-tier-card.easy {
+  border-left: 4px solid #16a34a;
+}
+
+.matrix-tier-card.medium {
+  border-left: 4px solid #f59e0b;
+}
+
+.matrix-tier-card.hard {
+  border-left: 4px solid #dc2626;
+}
+
+.tier-name {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.tier-percent-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.tier-count-input {
+  max-width: 90px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  text-align: center;
+}
+
+/* Distribution Progress Bar */
+.distribution-bar-container {
+  height: 12px;
+  width: 100%;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.dist-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Action Buttons */
+.btn-composer-cancel {
+  padding: 10px 22px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-composer-cancel:hover {
+  background: #f1f5f9;
+}
+
+.btn-composer-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 26px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-composer-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+}
+
+.btn-composer-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.text-orange {
+  color: #ea580c !important;
+}
+

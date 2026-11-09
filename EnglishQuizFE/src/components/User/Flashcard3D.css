@@ -1,0 +1,342 @@
+/* Flashcard3D — scoped with the `fc3d-` prefix. Tokens live in src/styles/theme.css */
+
+.fc3d {
+  --box-color: var(--leitner-1);
+  --box-soft: #ffe4e6;
+  --box-text: #be123c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.fc3d-scene {
+  width: min(380px, 100%);
+  height: 240px;
+  perspective: 1000px;
+  cursor: pointer;
+  border-radius: var(--radius-card, 24px);
+  outline: none;
+}
+
+.fc3d-scene:focus-visible {
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.35);
+}
+
+.fc3d-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s var(--ease-flip, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.fc3d-scene.is-flipped .fc3d-inner {
+  transform: rotateY(180deg);
+}
+
+.fc3d-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  border-radius: var(--radius-card, 24px);
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-soft, rgba(226, 232, 240, 0.8));
+  box-shadow: var(--shadow-card);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  transition: box-shadow 0.25s var(--ease-standard);
+}
+
+.fc3d-scene:hover .fc3d-face {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* thin box-coloured accent on top edge */
+.fc3d-face::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--box-color);
+}
+
+.fc3d-back {
+  transform: rotateY(180deg);
+  gap: 10px;
+  padding-top: 18px;
+}
+
+/* ---------- Front ---------- */
+.fc3d-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fc3d-box-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-badge, 9999px);
+  background: var(--box-soft);
+  color: var(--box-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.fc3d-box-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--box-color);
+}
+
+.fc3d-audio {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--surface-muted, #f1f5f9);
+  color: var(--text-default, #1e293b);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s var(--ease-standard), color 0.2s var(--ease-standard);
+}
+
+.fc3d-audio::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--brand-orange-600, #ea580c);
+  opacity: 0;
+  transform: scale(1);
+  pointer-events: none;
+}
+
+.fc3d-audio:hover,
+.fc3d-audio:focus-visible,
+.fc3d-audio.is-speaking {
+  background: var(--brand-orange-100, #ffedd5);
+  color: var(--brand-orange-600, #ea580c);
+  outline: none;
+}
+
+.fc3d-audio:hover::after,
+.fc3d-audio:focus-visible::after,
+.fc3d-audio.is-speaking::after {
+  animation: fc3d-ripple 1.2s ease-out infinite;
+}
+
+@keyframes fc3d-ripple {
+  0% { opacity: 0.55; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+.fc3d-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  min-height: 0;
+}
+
+.fc3d-word {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-strong, #0f172a);
+  margin: 0;
+  word-break: break-word;
+}
+
+.fc3d-ipa-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.fc3d-ipa {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ipa-color, #6366f1);
+}
+
+.fc3d-pos {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-muted, #f1f5f9);
+  color: var(--text-muted, #64748b);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.fc3d-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--text-muted, #64748b);
+}
+
+/* ---------- Back ---------- */
+.fc3d-back-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fc3d-back-word {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+}
+
+.fc3d-definition {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-strong, #0f172a);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fc3d-example {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-default, #1e293b);
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fc3d-mark {
+  font-style: normal;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: var(--radius-badge, 9999px);
+  background: var(--highlight-amber, #fef3c7);
+  color: var(--highlight-amber-text, #92400e);
+}
+
+.fc3d-tip {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface-page, #f8fafc);
+  border: 1px solid #eef2f6;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-default, #1e293b);
+}
+
+.fc3d-tip svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--brand-amber-500, #f59e0b);
+}
+
+.fc3d-tip span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---------- Actions ---------- */
+.fc3d-actions {
+  display: flex;
+  gap: 12px;
+  width: min(380px, 100%);
+}
+
+.fc3d-actions .btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  border-radius: var(--radius-control, 12px);
+  line-height: 1.2;
+}
+
+.fc3d-btn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 400px) {
+  .fc3d-actions .btn {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+.fc3d-btn-sub {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.fc3d-btn-forget.btn-outline-danger {
+  border-width: 1.5px;
+}
+
+.fc3d-btn-remember,
+.fc3d-btn-remember:focus {
+  background: var(--success-solid, #16a34a);
+  border: 1.5px solid var(--success-solid, #16a34a);
+  color: #ffffff;
+}
+
+.fc3d-btn-remember:hover,
+.fc3d-btn-remember:active {
+  background: var(--success-600, #15803d) !important;
+  border-color: var(--success-600, #15803d) !important;
+  color: #ffffff !important;
+  box-shadow: var(--shadow-success);
+}
+
+.fc3d-actions .btn:disabled {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc3d-inner { transition: none; }
+  .fc3d-audio::after { animation: none !important; }
+}

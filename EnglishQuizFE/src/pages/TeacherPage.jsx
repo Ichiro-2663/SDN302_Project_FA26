@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import Header from "../components/common/Header";
 import Sidebar from "../components/common/Sidebar";
@@ -11,8 +12,39 @@ import ExamManagement from "../components/Admin/ExamManagement";
 import TopicManagement from "../components/Admin/TopicManagement";
 
 const TeacherPage = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const getInitialTab = () => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[0] === "teacher") {
+      return parts[1];
+    }
+    return localStorage.getItem("teacher_active_tab") || "dashboard";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[0] === "teacher") {
+      setActiveTab(parts[1]);
+      localStorage.setItem("teacher_active_tab", parts[1]);
+    } else if (parts.length === 1 && parts[0] === "teacher") {
+      const saved = localStorage.getItem("teacher_active_tab") || "dashboard";
+      setActiveTab(saved);
+      if (saved !== "dashboard") {
+        navigate(`/teacher/${saved}`, { replace: true });
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  const handleTabSelect = (tabKey) => {
+    setActiveTab(tabKey);
+    localStorage.setItem("teacher_active_tab", tabKey);
+    navigate(`/teacher/${tabKey === "dashboard" ? "" : tabKey}`);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -24,7 +56,7 @@ const TeacherPage = () => {
         return <TopicManagement />;
       case "dashboard":
       default:
-        return <TeacherDashboard setActiveTab={setActiveTab} />;
+        return <TeacherDashboard setActiveTab={handleTabSelect} />;
     }
   };
 
@@ -34,7 +66,7 @@ const TeacherPage = () => {
       <Sidebar
         role="teacher"
         activeTab={activeTab}
-        onSelect={setActiveTab}
+        onSelect={handleTabSelect}
         onToggle={setIsSidebarOpen}
       />
 

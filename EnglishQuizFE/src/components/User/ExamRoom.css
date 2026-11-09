@@ -1,0 +1,496 @@
+/* ==========================================================================
+   ExamRoom.css — Kombai-Inspired High-Fidelity Design System
+   Matches Design System #48 & EnglishQuiz Single Source of Truth
+   ========================================================================== */
+
+.exam-room-container {
+  width: 100%;
+  animation: examFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes examFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 1. TOP STICKY EXAM HEADER */
+.exam-sticky-header {
+  position: sticky;
+  top: 75px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(8px);
+  z-index: 1020;
+}
+
+.exam-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.exam-level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffedd5;
+  color: #ea580c;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid #fdba74;
+}
+
+.exam-cert-pill {
+  background: #e0f2fe;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.exam-subtitle {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Timer Badge */
+.exam-timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  transition: all 0.25s ease;
+}
+
+.exam-timer-pill.normal {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+
+.exam-timer-pill.warning {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+}
+
+.exam-timer-pill.urgent {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  animation: pulseUrgent 1.2s infinite alternate;
+}
+
+@keyframes pulseUrgent {
+  from {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+    transform: scale(1);
+  }
+  to {
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+    transform: scale(1.02);
+  }
+}
+
+/* Green Submit Button */
+.btn-submit-exam {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-submit-exam:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+}
+
+.btn-submit-exam:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 2. QUESTION STAGE CARD */
+.exam-question-card {
+  border-radius: 24px !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+.exam-qnum-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* Micro progress bar under question number */
+.question-progress-track {
+  width: 120px;
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.question-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ea580c 0%, #f59e0b 100%);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* Category pill badge */
+.exam-category-pill {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.exam-question-text {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #0f172a;
+}
+
+/* Action buttons: bookmark, audio */
+.btn-action-round {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-action-round:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.btn-action-round.active {
+  background: #ffedd5;
+  border-color: #fdba74;
+}
+
+/* Flag toggle button */
+.btn-flag-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-flag-toggle:hover {
+  background: #f8fafc;
+}
+
+.btn-flag-toggle.flagged {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #b45309;
+}
+
+/* Multiple Choice Option Items */
+.exam-options-list {
+  display: flex;
+  flex-column: column;
+  gap: 12px;
+}
+
+.exam-choice-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exam-choice-item:hover {
+  border-color: #fdba74;
+  background: #fffaf5;
+  transform: translateX(4px);
+}
+
+.exam-choice-item.selected {
+  border-color: #ea580c !important;
+  background: #fff7ed !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.12);
+}
+
+.choice-letter-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.exam-choice-item.selected .choice-letter-badge {
+  background: #ea580c;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+}
+
+.choice-text {
+  font-size: 15.5px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+/* Bottom Navigation Controls */
+.btn-nav-prev {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-nav-prev:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.btn-nav-prev:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-nav-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-nav-next:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+}
+
+.btn-nav-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-clear-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.btn-clear-choice:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Keyboard badge pills */
+.kbd-pill {
+  display: inline-block;
+  padding: 2px 7px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #334155;
+  font-family: inherit;
+}
+
+/* 3. RIGHT QUESTION PALETTE NAVIGATOR */
+.palette-card {
+  border-radius: 24px !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+.palette-title {
+  font-size: 16px;
+}
+
+.palette-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.palette-legend-dot.bg-done {
+  background: #16a34a;
+}
+
+.palette-legend-dot.bg-unanswered {
+  background: #e2e8f0;
+}
+
+.palette-legend-dot.bg-flag {
+  background: #f59e0b;
+}
+
+/* 5-Column Grid Layout */
+.palette-grid-5cols {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.palette-cell {
+  position: relative;
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.palette-cell.cell-unanswered {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #334155;
+}
+
+.palette-cell.cell-unanswered:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+  transform: scale(1.05);
+}
+
+.palette-cell.cell-done {
+  background: #16a34a;
+  border: 1.5px solid #16a34a;
+  color: #ffffff;
+}
+
+.palette-cell.cell-done:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+.palette-cell.cell-current {
+  background: #ea580c !important;
+  border: 2px solid #ea580c !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+  transform: scale(1.06);
+}
+
+/* Flag Indicator on Corner */
+.cell-flag-pin {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 1.5px solid #ffffff;
+}
+
+/* Palette 3-Column Stats Footer */
+.palette-stats-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-col {
+  padding: 4px 8px;
+}
+
+.stat-number {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.text-amber {
+  color: #f59e0b !important;
+}
+
+.fill-amber {
+  fill: #f59e0b !important;
+}

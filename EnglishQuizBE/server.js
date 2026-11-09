@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 require("dotenv").config();
@@ -50,5 +50,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
-  console.log([Server] EnglishQuiz BE running at http://localhost:);
+  console.log(`[Server] EnglishQuiz BE running at http://localhost:${PORT}`);
 });

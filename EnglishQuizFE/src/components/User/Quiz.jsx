@@ -1,22 +1,12 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
-import { Card, Row, Col, Button, Badge, ProgressBar, Form } from "react-bootstrap";
-import {
-  FaClock,
-  FaFlag,
-  FaRegFlag,
-  FaBookmark,
-  FaRegBookmark,
-  FaLightbulb,
-  FaRedo,
-  FaArrowLeft,
-  FaArrowRight,
-  FaTrophy,
-  FaVolumeUp,
-} from "react-icons/fa";
+import { Card, Row, Col, Button, Badge, Form, Modal, Spinner } from "react-bootstrap";
+import { Sparkles, Clock, Play } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import axiosClient from "../../api/axiosClient";
+import ExamRoom from "./ExamRoom";
+import QuizReview from "./QuizReview";
 
-const Quiz = ({ type = "quiz" }) => {
+const Quiz = ({ type = "quiz", onExamLockChange }) => {
   const { user } = useContext(AuthContext);
   const userId = user?._id || localStorage.getItem("id");
 
@@ -24,6 +14,22 @@ const Quiz = ({ type = "quiz" }) => {
   const [exams, setExams] = useState([]);
   const [filterLevel, setFilterLevel] = useState("All");
   const [loading, setLoading] = useState(true);
+
+  // Metadata for creating tests
+  const [topicsList, setTopicsList] = useState([]);
+  const [skillsList, setSkillsList] = useState([]);
+
+  // Create Mini Test Modal state
+  const [showCreateMiniModal, setShowCreateMiniModal] = useState(false);
+  const [isGeneratingMini, setIsGeneratingMini] = useState(false);
+  const [miniFormData, setMiniFormData] = useState({
+    title: "",
+    topic: "",
+    skill: "",
+    level: "Mixed",
+    duration: 15,
+    questionCount: 10,
+  });
 
   // Active exam state
   const [activeExam, setActiveExam] = useState(null);
@@ -41,7 +47,7 @@ const Quiz = ({ type = "quiz" }) => {
   const [result, setResult] = useState(null); // Result payload from server
   const [bookmarkedList, setBookmarkedList] = useState({});
 
-  // Load exam list
+  // Load exam list & metadata
   useEffect(() => {
     const fetchExams = async () => {
       setLoading(true);
@@ -74,8 +80,22 @@ const Quiz = ({ type = "quiz" }) => {
       }
     };
 
+    const fetchMetadata = async () => {
+      try {
+        const [tRes, sRes] = await Promise.allSettled([
+          axiosClient.get("/topics"),
+          axiosClient.get("/skills"),
+        ]);
+        if (tRes.status === "fulfilled") setTopicsList(tRes.value.data || []);
+        if (sRes.status === "fulfilled") setSkillsList(sRes.value.data || []);
+      } catch (err) {
+        console.error("Metadata load error:", err);
+      }
+    };
+
     fetchExams();
     fetchBookmarks();
+    fetchMetadata();
   }, [type, filterLevel, userId]);
 
   // Submit function (Server-side grading)
@@ -98,7 +118,7 @@ const Quiz = ({ type = "quiz" }) => {
         setResult(res.data);
       } catch (err) {
         console.error("Exam submit error:", err);
-        alert("Lỗi nộp bài: " + (err.response?.data?.message || err.message));
+        alert("Lỗi nộp bài thi: " + (err.response?.data?.message || err.message));
       } finally {
         setSubmitting(false);
       }
@@ -108,67 +128,80 @@ const Quiz = ({ type = "quiz" }) => {
 
   // Timer countdown hook
   useEffect(() => {
-    if (activeExam && !result && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            submitExam(true); // Auto-submit when time is up!
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [activeExam, result, submitExam, timeLeft]);
+    if (!activeExam || result) return;
 
-  // Start exam
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          submitExam(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, [activeExam, result, submitExam]);
+
+  // Start Exam
   const handleStartExam = async (exam) => {
     try {
-      setLoading(true);
-      // Call SECURE endpoint: no correctAnswer or explanation in client!
       const res = await axiosClient.get(`/exams/${exam._id}/take`);
-      const examData = res.data.exam;
+      const rawData = res.data;
+      const examData = rawData.exam || rawData;
+      const qList = examData.questions || rawData.questions || [];
 
       setActiveExam(examData);
-      setQuestions(examData.questions || []);
+      setQuestions(qList);
       setCurrentIdx(0);
       setUserAnswers({});
       setFlaggedQuestions({});
       setResult(null);
+      setTimeLeft((examData.duration || (type === "minitest" ? 15 : 30)) * 60);
 
-      // Initialize timer
-      const durationSec = (examData.duration || (type === "minitest" ? 15 : 30)) * 60;
-      setTimeLeft(durationSec);
+      if (onExamLockChange) onExamLockChange(true);
     } catch (err) {
-      console.error("Start exam error:", err);
-      alert("Không thể tải bài thi: " + (err.response?.data?.message || err.message));
-    } finally {
-      setLoading(false);
+      console.error("Take exam error:", err);
+      alert("Không thể tải nội dung đề thi: " + (err.response?.data?.message || err.message));
     }
   };
 
-  const handleSelectAnswer = (qId, answerValue) => {
-    setUserAnswers({ ...userAnswers, [qId]: answerValue });
-  };
-
+  // Toggle flag on question
   const toggleFlag = (qId) => {
-    setFlaggedQuestions({ ...flaggedQuestions, [qId]: !flaggedQuestions[qId] });
+    setFlaggedQuestions((prev) => ({
+      ...prev,
+      [qId]: !prev[qId],
+    }));
   };
 
+  // Select answer for question
+  const handleSelectAnswer = (qId, ans) => {
+    if (ans === undefined) {
+      const copy = { ...userAnswers };
+      delete copy[qId];
+      setUserAnswers(copy);
+    } else {
+      setUserAnswers((prev) => ({
+        ...prev,
+        [qId]: ans,
+      }));
+    }
+  };
+
+  // Bookmark toggle
   const toggleBookmark = async (qId) => {
     if (!userId) return;
-    if (bookmarkedList[qId]) {
+    const existingBookmarkId = bookmarkedList[qId];
+
+    if (existingBookmarkId) {
       try {
-        await axiosClient.delete(`/bookmarks/${bookmarkedList[qId]}`);
-        const updated = { ...bookmarkedList };
-        delete updated[qId];
-        setBookmarkedList(updated);
+        await axiosClient.delete(`/bookmarks/${existingBookmarkId}`);
+        const copy = { ...bookmarkedList };
+        delete copy[qId];
+        setBookmarkedList(copy);
       } catch (err) {
-        console.error("Bookmark error:", err);
+        console.error("Remove bookmark error:", err);
       }
     } else {
       try {
@@ -176,7 +209,6 @@ const Quiz = ({ type = "quiz" }) => {
           userId,
           itemType: "Question",
           itemId: qId,
-          notes: "Lưu từ đề thi: " + (activeExam?.title || "Quiz"),
         });
         setBookmarkedList({ ...bookmarkedList, [qId]: res.data._id });
       } catch (err) {
@@ -185,516 +217,93 @@ const Quiz = ({ type = "quiz" }) => {
     }
   };
 
-  const handleTTS = (text) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      window.speechSynthesis.speak(utterance);
+  // Handle Quick Mini Test Generation
+  const handleCreateMiniTest = async (e) => {
+    e.preventDefault();
+    setIsGeneratingMini(true);
+    try {
+      const payload = {
+        title: miniFormData.title.trim() || undefined,
+        duration: Number(miniFormData.duration) || 15,
+        questionCount: Number(miniFormData.questionCount) || 10,
+        topic: miniFormData.topic || undefined,
+        skill: miniFormData.skill || undefined,
+        level: miniFormData.level !== "All" ? miniFormData.level : undefined,
+        createdBy: userId || undefined,
+      };
+
+      const res = await axiosClient.post("/exams/minitest/generate", payload);
+      const newExam = res.data.exam;
+
+      setShowCreateMiniModal(false);
+      setExams((prev) => [newExam, ...prev]);
+
+      // Automatically launch the newly generated exam
+      await handleStartExam(newExam);
+    } catch (err) {
+      console.error("Generate mini test error:", err);
+      alert("Lỗi tạo bài mini test: " + (err.response?.data?.message || err.message));
+    } finally {
+      setIsGeneratingMini(false);
     }
   };
 
-  // Format timer string MM:SS
-  const formatTime = (secs) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-  };
+  // Warn before leaving page during active exam
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (activeExam && !result) {
+        e.preventDefault();
+        e.returnValue = "Bạn đang làm bài thi! Mọi kết quả chưa nộp sẽ bị mất.";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [activeExam, result]);
 
   // ================= VIEW 1: RESULT REVIEW SCREEN =================
   if (result) {
-    const isPassed = result.status === "PASSED";
-
     return (
-      <div className="w-100">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            className="rounded-pill fw-bold"
-            onClick={() => {
-              setActiveExam(null);
-              setResult(null);
-            }}
-          >
-            &larr; Quay Lại Danh Sách Đề Thi
-          </Button>
-          <Button
-            variant="warning"
-            size="sm"
-            className="rounded-pill fw-bold text-dark d-flex align-items-center gap-1"
-            onClick={() => handleStartExam(activeExam)}
-          >
-            <FaRedo /> Làm Lại Bài Thi
-          </Button>
-        </div>
-
-        {/* Score Summary Card */}
-        <Card
-          className="border-0 shadow-sm rounded-4 mb-4 text-white overflow-hidden"
-          style={{
-            background: isPassed
-              ? "linear-gradient(135deg, #15803d 0%, #16a34a 100%)"
-              : "linear-gradient(135deg, #b91c1c 0%, #ea580c 100%)",
-            borderRadius: "20px",
-          }}
-        >
-          <Card.Body className="p-4 p-md-5 text-center">
-            <div className="mb-2">
-              <FaTrophy size={48} className="text-warning" />
-            </div>
-            <h3 className="fw-bold mb-1">
-              {isPassed ? "Chúc Mừng! Bạn Đã ĐẠT Bài Thi" : "Rất Tiếc! Bạn Chưa ĐẠT Yêu Cầu"}
-            </h3>
-            <p className="opacity-90 mb-3">{activeExam?.title}</p>
-
-            <div className="d-inline-flex gap-4 p-3 bg-white bg-opacity-10 rounded-4">
-              <div>
-                <span className="small d-block opacity-75">Điểm số</span>
-                <span className="fs-3 fw-bold">
-                  {result.score} / {result.total}
-                </span>
-              </div>
-              <div className="border-start border-white border-opacity-25" />
-              <div>
-                <span className="small d-block opacity-75">Tỷ lệ chính xác</span>
-                <span className="fs-3 fw-bold">{result.percentage}%</span>
-              </div>
-              <div className="border-start border-white border-opacity-25" />
-              <div>
-                <span className="small d-block opacity-75">Trạng thái</span>
-                <span className="fs-3 fw-bold">{result.status}</span>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
-
-        {/* Detailed Question Review */}
-        <h5 className="fw-bold text-dark mb-3">Chi Tiết Từng Câu Hỏi & Giải Thích:</h5>
-        <div className="d-flex flex-column gap-3 mb-4">
-          {(result.details || []).map((detail, idx) => {
-            const isCorrect = detail.isCorrect;
-            return (
-              <Card key={detail.questionId || idx} className="border-0 shadow-sm rounded-4 p-4 bg-white">
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <span
-                      className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                      style={{
-                        width: "30px",
-                        height: "30px",
-                        background: isCorrect ? "#16a34a" : "#dc2626",
-                        fontSize: "13px",
-                      }}
-                    >
-                      {idx + 1}
-                    </span>
-                    <span className="fw-bold text-dark">Câu {idx + 1}</span>
-                    <Badge bg={isCorrect ? "success" : "danger"} pill>
-                      {isCorrect ? "Đúng (+1)" : "Sai (0)"}
-                    </Badge>
-                  </div>
-
-                  <Button
-                    size="sm"
-                    variant={bookmarkedList[detail.questionId] ? "danger" : "outline-secondary"}
-                    className="rounded-pill d-flex align-items-center gap-1"
-                    onClick={() => toggleBookmark(detail.questionId)}
-                  >
-                    {bookmarkedList[detail.questionId] ? <FaBookmark /> : <FaRegBookmark />}
-                    <span className="small">
-                      {bookmarkedList[detail.questionId] ? "Đã lưu" : "Lưu câu hỏi"}
-                    </span>
-                  </Button>
-                </div>
-
-                <p className="fw-bold text-dark mb-3 mt-1 fs-6">{detail.content}</p>
-
-                {/* Answer comparison */}
-                <div className="bg-light p-3 rounded-3 mb-3 small">
-                  <Row className="g-2">
-                    <Col sm={6}>
-                      <span className="text-muted d-block mb-1">Đáp án bạn chọn:</span>
-                      <strong className={isCorrect ? "text-success" : "text-danger"}>
-                        {detail.userAnswer !== undefined && detail.userAnswer !== null && detail.userAnswer !== ""
-                          ? detail.questionType === "MultipleChoice" && detail.options
-                            ? `${String.fromCharCode(65 + Number(detail.userAnswer))}. ${
-                                detail.options[detail.userAnswer] || detail.userAnswer
-                              }`
-                            : String(detail.userAnswer)
-                          : "(Bỏ trống / Chưa chọn)"}
-                      </strong>
-                    </Col>
-                    <Col sm={6}>
-                      <span className="text-muted d-block mb-1">Đáp án đúng của đề:</span>
-                      <strong className="text-success">
-                        {detail.questionType === "MultipleChoice" && detail.options
-                          ? `${String.fromCharCode(65 + Number(detail.correctAnswer))}. ${
-                              detail.options[detail.correctAnswer] || detail.correctAnswer
-                            }`
-                          : String(detail.correctAnswer)}
-                      </strong>
-                    </Col>
-                  </Row>
-                </div>
-
-                {/* Explanation */}
-                <div
-                  className="p-3 rounded-3 small"
-                  style={{ background: "#fffbeb", borderLeft: "4px solid #f59e0b" }}
-                >
-                  <div className="d-flex align-items-center gap-2 fw-bold text-dark mb-1">
-                    <FaLightbulb color="#ea580c" /> Giải Thích Chi Tiết:
-                  </div>
-                  <div className="text-secondary">{detail.explanation}</div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
+      <QuizReview
+        result={result}
+        exam={activeExam}
+        onRetry={() => handleStartExam(activeExam)}
+        onBackToList={() => {
+          setActiveExam(null);
+          setResult(null);
+          if (onExamLockChange) onExamLockChange(false);
+        }}
+        bookmarkedList={bookmarkedList}
+        onToggleBookmark={toggleBookmark}
+      />
     );
   }
 
   // ================= VIEW 2: ACTIVE EXAM IN PROGRESS =================
   if (activeExam) {
-    const currentQ = questions[currentIdx];
-    const isFlagged = flaggedQuestions[currentQ?._id];
-    const totalQuestions = questions.length;
-    const answeredCount = Object.keys(userAnswers).length;
-    const progressPercent = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
-    const isUrgent = timeLeft < 300; // less than 5 minutes
-
     return (
-      <div className="w-100">
-        {/* Top Floating Control Bar */}
-        <Card className="border-0 shadow-sm rounded-4 p-3 bg-white mb-4 sticky-top">
-          <Row className="align-items-center g-2">
-            <Col xs={12} md={4} className="d-flex align-items-center gap-2">
-              <span className="fw-bold text-dark fs-6 text-truncate">{activeExam.title}</span>
-              <Badge bg="warning" text="dark" pill>
-                {activeExam.level}
-              </Badge>
-            </Col>
-
-            {/* Countdown Timer */}
-            <Col xs={6} md={4} className="text-md-center">
-              <div
-                className={`d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill fw-bold ${
-                  isUrgent ? "bg-danger text-white" : "bg-light text-dark border"
-                }`}
-                style={{ fontSize: "16px" }}
-              >
-                <FaClock />
-                <span>{formatTime(timeLeft)}</span>
-                {isUrgent && <span className="small fw-normal">Sắp hết giờ!</span>}
-              </div>
-            </Col>
-
-            {/* Submit button */}
-            <Col xs={6} md={4} className="text-end">
-              <Button
-                variant="warning"
-                className="fw-bold px-4 rounded-pill text-dark shadow-sm"
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      `Bạn đã làm ${answeredCount}/${totalQuestions} câu. Bạn có chắc chắn muốn nộp bài ngay bây giờ?`
-                    )
-                  ) {
-                    submitExam();
-                  }
-                }}
-                disabled={submitting}
-              >
-                {submitting ? "Đang chấm..." : "Nộp Bài Thi"}
-              </Button>
-            </Col>
-          </Row>
-
-          <ProgressBar
-            now={progressPercent}
-            variant="warning"
-            style={{ height: "4px" }}
-            className="rounded-pill mt-3"
-          />
-        </Card>
-
-        <Row className="g-4">
-          {/* Main Question View (Left / Center) */}
-          <Col lg={8}>
-            {currentQ && (
-              <Card className="border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold text-dark fs-5">Câu {currentIdx + 1}</span>
-                    <span className="text-muted small">/ {totalQuestions}</span>
-                    <Badge bg="secondary" pill className="ms-2">
-                      {currentQ.questionType}
-                    </Badge>
-                  </div>
-
-                  <div className="d-flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline-secondary"
-                      className="rounded-circle p-2"
-                      title="Phát âm"
-                      onClick={() => handleTTS(currentQ.content)}
-                    >
-                      <FaVolumeUp />
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant={isFlagged ? "warning" : "outline-secondary"}
-                      className="rounded-pill d-flex align-items-center gap-1"
-                      onClick={() => toggleFlag(currentQ._id)}
-                    >
-                      {isFlagged ? <FaFlag /> : <FaRegFlag />}
-                      <span className="small">{isFlagged ? "Đã gắn cờ" : "Gắn cờ"}</span>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Passage if present */}
-                {currentQ.passage && (
-                  <div className="bg-light p-3 rounded-3 mb-3 border text-secondary small fst-italic">
-                    {currentQ.passage}
-                  </div>
-                )}
-
-                {/* Question content */}
-                <h5 className="fw-bold text-dark mb-4 lh-base">{currentQ.content}</h5>
-
-                {/* Options based on questionType */}
-                {currentQ.questionType === "MultipleChoice" && (
-                  <div className="d-flex flex-column gap-2 mb-4">
-                    {(currentQ.options || []).map((opt, idx) => {
-                      const isSelected = String(userAnswers[currentQ._id]) === String(idx);
-                      return (
-                        <div
-                          key={idx}
-                          className="p-3 rounded-3 d-flex align-items-center gap-3 cursor-pointer"
-                          style={{
-                            border: `1.5px solid ${isSelected ? "#ea580c" : "#e2e8f0"}`,
-                            background: isSelected ? "#fff7ed" : "#ffffff",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => handleSelectAnswer(currentQ._id, String(idx))}
-                        >
-                          <span
-                            className="fw-bold rounded-circle d-flex align-items-center justify-content-center"
-                            style={{
-                              width: "28px",
-                              height: "28px",
-                              background: isSelected ? "#ea580c" : "#f1f5f9",
-                              color: isSelected ? "#ffffff" : "#64748b",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {String.fromCharCode(65 + idx)}
-                          </span>
-                          <span className="fw-semibold text-dark">{opt}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {currentQ.questionType === "TrueFalse" && (
-                  <div className="d-flex gap-3 mb-4">
-                    {["True", "False"].map((opt) => {
-                      const isSelected =
-                        String(userAnswers[currentQ._id] || "").toLowerCase() === opt.toLowerCase();
-                      return (
-                        <Button
-                          key={opt}
-                          variant={isSelected ? "warning" : "outline-secondary"}
-                          className="flex-grow-1 py-3 fw-bold rounded-3"
-                          onClick={() => handleSelectAnswer(currentQ._id, opt)}
-                        >
-                          {opt === "True" ? "✓ Đúng (True)" : "✗ Sai (False)"}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {currentQ.questionType === "FillInBlank" && (
-                  <div className="mb-4">
-                    <Form.Control
-                      type="text"
-                      placeholder="Nhập câu trả lời của bạn vào đây..."
-                      value={userAnswers[currentQ._id] || ""}
-                      onChange={(e) => handleSelectAnswer(currentQ._id, e.target.value)}
-                      className="py-2 px-3 fs-6 rounded-3"
-                    />
-                  </div>
-                )}
-
-                {currentQ.questionType === "Matching" && (
-                  <div className="mb-4">
-                    <p className="text-muted small">Hãy chọn đáp án phù hợp với từng mục:</p>
-                    <div className="d-flex flex-column gap-2">
-                      {(currentQ.matchingPairs || []).map((pair, pIdx) => {
-                        let parsedAns = {};
-                        try {
-                          parsedAns = JSON.parse(userAnswers[currentQ._id] || "{}");
-                        } catch (e) {}
-
-                        return (
-                          <Row key={pIdx} className="align-items-center g-2">
-                            <Col xs={6}>
-                              <div className="p-2 bg-light rounded border fw-semibold small">
-                                {pIdx + 1}. {pair.left}
-                              </div>
-                            </Col>
-                            <Col xs={6}>
-                              <Form.Select
-                                size="sm"
-                                value={parsedAns[pIdx] !== undefined ? parsedAns[pIdx] : ""}
-                                onChange={(e) => {
-                                  const updated = { ...parsedAns, [pIdx]: Number(e.target.value) };
-                                  handleSelectAnswer(currentQ._id, JSON.stringify(updated));
-                                }}
-                              >
-                                <option value="">-- Chọn ghép --</option>
-                                {currentQ.matchingPairs.map((p, mIdx) => (
-                                  <option key={mIdx} value={mIdx}>
-                                    {String.fromCharCode(65 + mIdx)}. {p.right}
-                                  </option>
-                                ))}
-                              </Form.Select>
-                            </Col>
-                          </Row>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Bottom Navigation between questions */}
-                <div className="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    className="rounded-pill px-3"
-                    disabled={currentIdx === 0}
-                    onClick={() => setCurrentIdx(currentIdx - 1)}
-                  >
-                    <FaArrowLeft /> Câu Trước
-                  </Button>
-
-                  <Button
-                    variant="warning"
-                    size="sm"
-                    className="rounded-pill px-4 fw-bold text-dark"
-                    disabled={currentIdx === totalQuestions - 1}
-                    onClick={() => setCurrentIdx(currentIdx + 1)}
-                  >
-                    Câu Tiếp Theo <FaArrowRight />
-                  </Button>
-                </div>
-              </Card>
-            )}
-          </Col>
-
-          {/* Question Palette (Right Panel) */}
-          <Col lg={4}>
-            <Card className="border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style={{ top: "80px" }}>
-              <h6 className="fw-bold text-dark mb-3">Bảng Điều Hướng Câu Hỏi</h6>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(5, 1fr)",
-                  gap: "8px",
-                  maxHeight: "360px",
-                  overflowY: "auto",
-                  padding: "4px",
-                }}
-              >
-                {questions.map((q, idx) => {
-                  const isCurrent = currentIdx === idx;
-                  const isAnswered =
-                    userAnswers[q._id] !== undefined &&
-                    userAnswers[q._id] !== null &&
-                    userAnswers[q._id] !== "";
-                  const isFlag = flaggedQuestions[q._id];
-
-                  let btnBg = "#f8fafc";
-                  let btnColor = "#475569";
-                  let btnBorder = "1px solid #e2e8f0";
-
-                  if (isAnswered) {
-                    btnBg = "#ffedd5";
-                    btnColor = "#ea580c";
-                    btnBorder = "1px solid #ea580c";
-                  }
-
-                  if (isCurrent) {
-                    btnBorder = "2px solid #0f172a";
-                  }
-
-                  return (
-                    <button
-                      key={q._id || idx}
-                      onClick={() => setCurrentIdx(idx)}
-                      style={{
-                        position: "relative",
-                        aspectRatio: "1/1",
-                        borderRadius: "10px",
-                        border: btnBorder,
-                        background: btnBg,
-                        color: btnColor,
-                        fontWeight: isCurrent ? "700" : "500",
-                        fontSize: "13px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {idx + 1}
-                      {isFlag && (
-                        <FaFlag
-                          size={9}
-                          color="#f59e0b"
-                          style={{ position: "absolute", top: "3px", right: "3px" }}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div className="mt-4 pt-3 border-top small text-muted d-flex flex-column gap-2">
-                <div className="d-flex align-items-center gap-2">
-                  <div style={{ width: "14px", height: "14px", background: "#ffedd5", border: "1px solid #ea580c", borderRadius: "4px" }} />
-                  <span>Đã trả lời ({answeredCount})</span>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  <div style={{ width: "14px", height: "14px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "4px" }} />
-                  <span>Chưa trả lời ({totalQuestions - answeredCount})</span>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  <FaFlag size={12} color="#f59e0b" />
-                  <span>Đã gắn cờ ({Object.values(flaggedQuestions).filter(Boolean).length})</span>
-                </div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+      <ExamRoom
+        exam={activeExam}
+        questions={questions}
+        currentIdx={currentIdx}
+        onSelectIndex={setCurrentIdx}
+        userAnswers={userAnswers}
+        onSelectAnswer={handleSelectAnswer}
+        flaggedQuestions={flaggedQuestions}
+        onToggleFlag={toggleFlag}
+        bookmarkedList={bookmarkedList}
+        onToggleBookmark={toggleBookmark}
+        timeLeft={timeLeft}
+        onSubmitExam={submitExam}
+        isSubmitting={submitting}
+      />
     );
   }
 
   // ================= VIEW 3: EXAM SELECTION LIST =================
   return (
     <div className="w-100">
-      {/* Filters and Title */}
+      {/* Header & Controls Bar */}
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
           <h4 className="fw-bold text-dark mb-1">
@@ -702,27 +311,45 @@ const Quiz = ({ type = "quiz" }) => {
           </h4>
           <p className="text-muted small mb-0">
             {type === "minitest"
-              ? "Bài kiểm tra nhanh 10-15 câu giúp đánh giá tức thì sự tiến bộ"
+              ? "Bài kiểm tra nhanh 5-15 câu đánh giá tức thì sự tiến bộ"
               : "Bộ đề thi tổng hợp bấm giờ thực tế, chống gian lận và chấm tự động"}
           </p>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
-          <span className="small fw-bold text-muted">Cấp độ:</span>
-          <Form.Select
-            size="sm"
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value)}
-            style={{ width: "140px" }}
+        <div className="d-flex align-items-center gap-3 flex-wrap">
+          {/* Quick Create Mini Test Button */}
+          <Button
+            variant="warning"
+            className="fw-bold text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center gap-2 border-0"
+            style={{ background: "linear-gradient(135deg, #ea580c 0%, #f59e0b 100%)", color: "#ffffff" }}
+            onClick={() => setShowCreateMiniModal(true)}
           >
-            <option value="All">Tất cả</option>
-            <option value="A1">A1</option>
-            <option value="A2">A2</option>
-            <option value="B1">B1</option>
-            <option value="B2">B2</option>
-            <option value="C1">C1</option>
-            <option value="C2">C2</option>
-          </Form.Select>
+            <Sparkles size={16} color="#ffffff" />
+            <span style={{ color: "#ffffff" }}>
+              {type === "minitest" ? "⚡ Tạo Bài Mini Test Tự Động" : "⚡ Tạo Đề Nhanh Tự Động"}
+            </span>
+          </Button>
+
+          {/* Level Filter */}
+          <div className="d-flex align-items-center gap-2">
+            <span className="small fw-bold text-muted">Cấp độ:</span>
+            <Form.Select
+              size="sm"
+              value={filterLevel}
+              onChange={(e) => setFilterLevel(e.target.value)}
+              className="rounded-pill px-3"
+              style={{ width: "130px" }}
+            >
+              <option value="All">Tất cả</option>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+              <option value="C1">C1</option>
+              <option value="C2">C2</option>
+              <option value="Mixed">Mixed</option>
+            </Form.Select>
+          </div>
         </div>
       </div>
 
@@ -733,8 +360,20 @@ const Quiz = ({ type = "quiz" }) => {
         </div>
       ) : exams.length === 0 ? (
         <Card className="border-0 shadow-sm rounded-4 text-center p-5 bg-white">
-          <h5 className="fw-bold text-dark">Chưa có đề thi nào</h5>
-          <p className="text-muted small">Giáo viên đang hoàn thiện các bộ đề mới. Hãy quay lại sau nhé!</p>
+          <div className="mb-3">
+            <Sparkles size={48} className="text-warning" />
+          </div>
+          <h5 className="fw-bold text-dark">Chưa có bài thi nào trong danh mục này</h5>
+          <p className="text-muted small mb-4">
+            Bạn có thể tự tạo bài kiểm tra nhanh theo chủ đề yêu thích ngay bây giờ chỉ với 1 cú nhấp chuột!
+          </p>
+          <Button
+            variant="warning"
+            className="rounded-pill px-4 py-2 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-2 mx-auto"
+            onClick={() => setShowCreateMiniModal(true)}
+          >
+            <Sparkles size={18} /> Tạo Bài Mini Test Đầu Tiên Ngay
+          </Button>
         </Card>
       ) : (
         <Row className="g-4">
@@ -744,20 +383,21 @@ const Quiz = ({ type = "quiz" }) => {
 
             return (
               <Col key={exam._id} xs={12} md={6} lg={4}>
-                <Card className="border-0 shadow-sm rounded-4 p-4 h-100 bg-white d-flex flex-column justify-content-between">
+                <Card className="border-0 shadow-sm rounded-4 p-4 h-100 bg-white d-flex flex-column justify-content-between exam-listing-card">
                   <div>
                     <div className="d-flex justify-content-between align-items-start mb-2">
-                      <Badge bg="warning" text="dark" pill>
-                        {exam.level || "Mixed"}
+                      <Badge bg="warning" text="dark" pill className="px-2.5 py-1">
+                        {typeof exam.level === "object" ? exam.level.name : (exam.level || "Mixed")}
                       </Badge>
                       <span className="text-muted small d-flex align-items-center gap-1">
-                        <FaClock size={12} /> {duration} phút
+                        <Clock size={13} /> {duration} phút
                       </span>
                     </div>
 
                     <h5 className="fw-bold text-dark mb-2">{exam.title}</h5>
                     <p className="text-muted small mb-3">
-                      {exam.description || `Đề thi tổng hợp gồm ${questionCount} câu hỏi được phân bổ theo ma trận.`}
+                      {exam.description ||
+                        `Bộ đề trắc nghiệm gồm ${questionCount} câu hỏi chuẩn hóa giúp ôn luyện hiệu quả.`}
                     </p>
 
                     <div className="d-flex flex-wrap gap-2 mb-3">
@@ -774,10 +414,11 @@ const Quiz = ({ type = "quiz" }) => {
 
                   <Button
                     variant="warning"
-                    className="w-100 py-2 fw-bold text-dark rounded-pill shadow-sm"
+                    className="w-100 py-2 fw-bold text-dark rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2 mt-3"
                     onClick={() => handleStartExam(exam)}
                   >
-                    Bắt Đầu Làm Bài &rarr;
+                    <span>Bắt Đầu Làm Bài</span>
+                    <Play size={14} />
                   </Button>
                 </Card>
               </Col>
@@ -785,6 +426,157 @@ const Quiz = ({ type = "quiz" }) => {
           })}
         </Row>
       )}
+
+      {/* QUICK MINI TEST CREATION MODAL */}
+      <Modal show={showCreateMiniModal} onHide={() => !isGeneratingMini && setShowCreateMiniModal(false)} centered size="lg">
+        <Modal.Header closeButton={!isGeneratingMini} className="border-0 pb-0">
+          <Modal.Title className="fw-bold fs-5 text-dark d-flex align-items-center gap-2">
+            <Sparkles className="text-warning" size={22} />
+            Tự Động Tạo Bài Mini Test Nhanh
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="py-3">
+          <p className="text-muted small mb-4">
+            Hệ thống sẽ tự động tổng hợp câu hỏi từ ngân hàng đề thi theo đúng chủ đề và thời gian bạn chọn, giúp bạn luyện tập nhanh và đánh giá năng lực ngay.
+          </p>
+
+          <Form onSubmit={handleCreateMiniTest}>
+            <Row className="g-3 mb-3">
+              <Col xs={12}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Tên bài kiểm tra</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="VD: Mini Test Ngữ Pháp & Từ Vựng - 10 Câu"
+                    value={miniFormData.title}
+                    onChange={(e) => setMiniFormData({ ...miniFormData, title: e.target.value })}
+                    className="py-2 rounded-3"
+                  />
+                  <Form.Text className="text-muted small">
+                    Để trống nếu muốn hệ thống tự đặt tên tự động.
+                  </Form.Text>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Chủ đề (Topic)</Form.Label>
+                  <Form.Select
+                    value={miniFormData.topic}
+                    onChange={(e) => setMiniFormData({ ...miniFormData, topic: e.target.value })}
+                    className="py-2 rounded-3"
+                  >
+                    <option value="">-- Tất cả chủ đề --</option>
+                    {topicsList.map((t) => (
+                      <option key={t._id} value={t._id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Kỹ năng (Skill)</Form.Label>
+                  <Form.Select
+                    value={miniFormData.skill}
+                    onChange={(e) => setMiniFormData({ ...miniFormData, skill: e.target.value })}
+                    className="py-2 rounded-3"
+                  >
+                    <option value="">-- Tất cả kỹ năng --</option>
+                    {skillsList.map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Cấp độ (Level)</Form.Label>
+                  <Form.Select
+                    value={miniFormData.level}
+                    onChange={(e) => setMiniFormData({ ...miniFormData, level: e.target.value })}
+                    className="py-2 rounded-3"
+                  >
+                    <option value="Mixed">Hỗn hợp (Mixed)</option>
+                    <option value="A1">A1 - Sơ cấp</option>
+                    <option value="A2">A2 - Cơ bản</option>
+                    <option value="B1">B1 - Trung cấp</option>
+                    <option value="B2">B2 - Khá</option>
+                    <option value="C1">C1 - Nâng cao</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Số lượng câu hỏi</Form.Label>
+                  <Form.Select
+                    value={miniFormData.questionCount}
+                    onChange={(e) => setMiniFormData({ ...miniFormData, questionCount: Number(e.target.value) })}
+                    className="py-2 rounded-3"
+                  >
+                    <option value={5}>5 câu hỏi (Siêu nhanh)</option>
+                    <option value={10}>10 câu hỏi (Tiêu chuẩn)</option>
+                    <option value={15}>15 câu hỏi (Thử thách)</option>
+                    <option value={20}>20 câu hỏi (Đầy đủ)</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Thời gian làm bài</Form.Label>
+                  <Form.Select
+                    value={miniFormData.duration}
+                    onChange={(e) => setMiniFormData({ ...miniFormData, duration: Number(e.target.value) })}
+                    className="py-2 rounded-3"
+                  >
+                    <option value={5}>5 phút</option>
+                    <option value={10}>10 phút</option>
+                    <option value={15}>15 phút</option>
+                    <option value={20}>20 phút</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <div className="d-flex justify-content-end gap-2 pt-3 border-top mt-4">
+              <Button
+                variant="light"
+                className="rounded-pill px-4"
+                disabled={isGeneratingMini}
+                onClick={() => setShowCreateMiniModal(false)}
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="warning"
+                type="submit"
+                disabled={isGeneratingMini}
+                className="rounded-pill px-4 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-2"
+                style={{ background: "linear-gradient(135deg, #ea580c 0%, #f59e0b 100%)", color: "#ffffff", border: "none" }}
+              >
+                {isGeneratingMini ? (
+                  <>
+                    <Spinner size="sm" animation="border" />
+                    <span>Đang Tạo & Tải Đề...</span>
+                  </>
+                ) : (
+                  <>
+                    <Play size={16} color="#ffffff" />
+                    <span style={{ color: "#ffffff" }}>Tạo & Bắt Đầu Ngay</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

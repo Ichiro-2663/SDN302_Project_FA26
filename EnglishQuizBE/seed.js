@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 const User = require("./models/User");
@@ -13,6 +14,7 @@ const Topic = require("./models/Topic");
 const Skill = require("./models/Skill");
 const Certificate = require("./models/Certificate");
 const Notice = require("./models/Notice");
+const Feedback = require("./models/Feedback");
 
 const dataDir = path.join(__dirname, "data");
 
@@ -25,28 +27,29 @@ const loadJson = (filename) => {
   return [];
 };
 
+const deepCleanOids = (data) => {
+  if (data === null || data === undefined) return data;
+  if (Array.isArray(data)) {
+    return data.map(deepCleanOids);
+  }
+  if (typeof data === "object") {
+    if (data.$oid && Object.keys(data).length === 1) {
+      return data.$oid;
+    }
+    if (data.$date && Object.keys(data).length === 1) {
+      return new Date(data.$date);
+    }
+    const result = {};
+    for (const key of Object.keys(data)) {
+      result[key] = deepCleanOids(data[key]);
+    }
+    return result;
+  }
+  return data;
+};
+
 const cleanIds = (items) => {
-  return items.map((item) => {
-    const copy = { ...item };
-    if (copy._id && copy._id.$oid) copy._id = copy._id.$oid;
-    if (copy.userId && copy.userId.$oid) copy.userId = copy.userId.$oid;
-    if (copy.examId && copy.examId.$oid) copy.examId = copy.examId.$oid;
-    if (copy.topic && copy.topic.$oid) copy.topic = copy.topic.$oid;
-    if (copy.skill && copy.skill.$oid) copy.skill = copy.skill.$oid;
-    if (copy.certificate && copy.certificate.$oid) copy.certificate = copy.certificate.$oid;
-    if (copy.createdBy && copy.createdBy.$oid) copy.createdBy = copy.createdBy.$oid;
-    if (copy.itemId && copy.itemId.$oid) copy.itemId = copy.itemId.$oid;
-    if (copy.questions && Array.isArray(copy.questions)) {
-      copy.questions = copy.questions.map((q) => (q.$oid ? q.$oid : q));
-    }
-    if (copy.skills && Array.isArray(copy.skills)) {
-      copy.skills = copy.skills.map((s) => (s.$oid ? s.$oid : s));
-    }
-    if (copy.createdAt && copy.createdAt.$date) copy.createdAt = new Date(copy.createdAt.$date);
-    if (copy.updatedAt && copy.updatedAt.$date) copy.updatedAt = new Date(copy.updatedAt.$date);
-    if (copy.nextReviewDate && copy.nextReviewDate.$date) copy.nextReviewDate = new Date(copy.nextReviewDate.$date);
-    return copy;
-  });
+  return items.map((item) => deepCleanOids(item));
 };
 
 const seed = async () => {
@@ -67,6 +70,7 @@ const seed = async () => {
       Skill.deleteMany({}),
       Certificate.deleteMany({}),
       Notice.deleteMany({}),
+      Feedback.deleteMany({}),
     ]);
     console.log("[Seed] Cleared existing data");
 
@@ -79,6 +83,13 @@ const seed = async () => {
     const topics = cleanIds(loadJson("SDN302_project_SP26.topics.json"));
     const skills = cleanIds(loadJson("SDN302_project_SP26.skills.json"));
     const certificates = cleanIds(loadJson("SDN302_project_SP26.certificates.json"));
+
+    // Standardize all user passwords to '123456' using bcrypt
+    const defaultPasswordHash = await bcrypt.hash("123456", 10);
+    users.forEach((u) => {
+      u.password = defaultPasswordHash;
+      if (!u.status) u.status = "Active";
+    });
 
     if (topics.length) await Topic.insertMany(topics);
     if (skills.length) await Skill.insertMany(skills);
@@ -98,8 +109,23 @@ const seed = async () => {
       targetRole: "All",
     });
 
+    // Initial sample feedback from student
+    const studentUser = users.find((u) => u.role === "Student") || users[0];
+    if (studentUser) {
+      await Feedback.create({
+        userId: studentUser._id,
+        userName: studentUser.name,
+        userEmail: studentUser.email,
+        title: "Trải nghiệm làm bài thi rất mượt mà",
+        content: "Hệ thống đếm ngược thời gian và bảng điều hướng câu hỏi rất trực quan, giúp em làm bài tập trung hơn.",
+        rating: 5,
+        category: "Exam",
+        status: "Pending",
+      });
+    }
+
     console.log(`[Seed] Successfully seeded:
-      - ${users.length} Users
+      - ${users.length} Users (Default password set to '123456')
       - ${topics.length} Topics
       - ${skills.length} Skills
       - ${certificates.length} Certificates
@@ -108,7 +134,8 @@ const seed = async () => {
       - ${history.length} History entries
       - ${flashcards.length} Flashcards
       - ${bookmarks.length} Bookmarks
-      - 1 Notice`);
+      - 1 Notice
+      - 1 Feedback`);
 
     await mongoose.disconnect();
     console.log("[Seed] Finished and disconnected.");

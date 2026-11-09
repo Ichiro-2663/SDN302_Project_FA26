@@ -1,4 +1,6 @@
-﻿const mongoose = require("mongoose");
+const mongoose = require("mongoose");
+
+mongoose.set("strictPopulate", false);
 
 const connectDB = async (customUri) => {
   try {

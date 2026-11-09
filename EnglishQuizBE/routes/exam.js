@@ -3,6 +3,7 @@ const router = express.Router();
 const Exam = require("../models/Exam");
 const History = require("../models/History");
 const Question = require("../models/Question");
+const Notice = require("../models/Notice");
 
 // GET ADMIN STATS FOR DASHBOARD
 router.get("/stats", async (req, res) => {
@@ -104,6 +105,20 @@ router.get("/:id/take", async (req, res) => {
 
     if (!exam) return res.status(404).json({ success: false, message: "Exam not found" });
 
+    // Strict Anti-cheat sanitization: ensure no answers or matching pair rights leak to client
+    const sanitizedQuestions = (exam.questions || []).map((q) => {
+      const qObj = q.toObject ? q.toObject() : { ...q };
+      delete qObj.correctAnswer;
+      delete qObj.explanation;
+      if (qObj.questionType === "Matching" && Array.isArray(qObj.matchingPairs)) {
+        qObj.matchingPairs = qObj.matchingPairs.map((pair) => ({
+          _id: pair._id,
+          left: pair.left,
+        }));
+      }
+      return qObj;
+    });
+
     res.json({
       success: true,
       exam: {
@@ -113,7 +128,7 @@ router.get("/:id/take", async (req, res) => {
         type: exam.type,
         level: exam.level,
         topic: exam.topic,
-        questions: exam.questions,
+        questions: sanitizedQuestions,
       }
     });
   } catch (err) {
@@ -214,6 +229,7 @@ router.post("/:id/submit", async (req, res) => {
       historyId: historyRecord ? historyRecord._id : null,
       score,
       total,
+      totalQuestions: total,
       percentage,
       status,
       timeSpent,
@@ -288,6 +304,19 @@ router.post("/matrix/generate", async (req, res) => {
       .populate("questions")
       .populate("topic");
 
+    // Automatically notify all students about the new exam
+    try {
+      await Notice.create({
+        title: `Đề thi mới: ${newExam.title}`,
+        content: `Giáo viên vừa tạo đề thi mới "${newExam.title}" (${newExam.duration || 30} phút, ${combinedQuestionIds.length} câu hỏi). Hãy vào phòng thi làm bài ngay!`,
+        type: "info",
+        targetRole: "Student",
+        createdBy: createdBy || null,
+      });
+    } catch (noticeErr) {
+      console.error("Notice create error:", noticeErr);
+    }
+
     res.status(201).json({
       success: true,
       message: "Matrix exam generated successfully",
@@ -298,6 +327,90 @@ router.post("/matrix/generate", async (req, res) => {
         hard: hardQuestions.length,
         total: combinedQuestionIds.length
       }
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// AUTO-MINITEST GENERATOR (Quick 5-15 questions test)
+router.post("/minitest/generate", async (req, res) => {
+  try {
+    const {
+      title,
+      duration = 15,
+      questionCount = 10,
+      topic,
+      skill,
+      level,
+      createdBy,
+    } = req.body;
+
+    const baseFilter = {};
+    if (topic) baseFilter.topic = topic;
+    if (skill) baseFilter.skill = skill;
+    if (level && level !== "All" && level !== "Mixed") {
+      baseFilter.level = level;
+    }
+
+    const size = Math.max(1, Math.min(30, Number(questionCount) || 10));
+
+    // Sample matching questions
+    let sampleQuestions = await Question.aggregate([
+      { $match: baseFilter },
+      { $sample: { size } },
+    ]);
+
+    // Fallback if not enough questions in filter
+    if (sampleQuestions.length < size) {
+      const remaining = size - sampleQuestions.length;
+      const existingIds = sampleQuestions.map((q) => q._id);
+      const moreQuestions = await Question.aggregate([
+        { $match: { _id: { $nin: existingIds } } },
+        { $sample: { size: remaining } },
+      ]);
+      sampleQuestions = [...sampleQuestions, ...moreQuestions];
+    }
+
+    const questionIds = sampleQuestions.map((q) => q._id);
+
+    const defaultTitle =
+      title && title.trim()
+        ? title.trim()
+        : `Mini Test - ${sampleQuestions.length} Câu (${duration} Phút)`;
+
+    const newExam = await Exam.create({
+      title: defaultTitle,
+      duration: Number(duration) || 15,
+      type: "minitest",
+      level: level || "Mixed",
+      topic: topic || null,
+      skills: skill ? [skill] : [],
+      questions: questionIds,
+      createdBy: createdBy || null,
+    });
+
+    const populatedExam = await Exam.findById(newExam._id)
+      .populate("questions")
+      .populate("topic");
+
+    // Automatically notify all students about the new exam
+    try {
+      await Notice.create({
+        title: `Đề thi mới: ${newExam.title}`,
+        content: `Giáo viên vừa tạo đề thi mới "${newExam.title}" (${newExam.duration || 15} phút, ${questionIds.length} câu hỏi). Hãy vào phòng thi làm bài ngay!`,
+        type: "info",
+        targetRole: "Student",
+        createdBy: createdBy || null,
+      });
+    } catch (noticeErr) {
+      console.error("Notice create error:", noticeErr);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Mini test generated successfully",
+      exam: populatedExam,
     });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -332,6 +445,19 @@ router.post("/", async (req, res) => {
   try {
     const newExam = await Exam.create(req.body);
     const populated = await Exam.findById(newExam._id).populate("questions");
+
+    try {
+      await Notice.create({
+        title: `Đề thi mới: ${newExam.title}`,
+        content: `Giáo viên vừa tạo đề thi mới "${newExam.title}" (${newExam.duration || 30} phút). Hãy vào phòng thi làm bài ngay!`,
+        type: "info",
+        targetRole: "Student",
+        createdBy: req.body.createdBy || null,
+      });
+    } catch (noticeErr) {
+      console.error("Notice create error:", noticeErr);
+    }
+
     res.status(201).json(populated);
   } catch (err) {
     res.status(400).json({ message: err.message });

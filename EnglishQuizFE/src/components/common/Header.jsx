@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import axiosClient from "../../api/axiosClient";
 
-const Header = () => {
+const Header = ({ isExamLocked = false }) => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -52,9 +52,16 @@ const Header = () => {
             </Link>
           </div>
 
-          <div className="d-flex align-items-center gap-3">
-            {/* System Notices Bell */}
-            <Dropdown align="end">
+          {isExamLocked ? (
+            <div className="d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-warning bg-opacity-10 border border-warning">
+              <span className="small fw-bold text-warning-emphasis">
+                🔒 Chế Độ Phòng Thi Bảo Mật &mdash; Phải nộp bài để quay lại Menu
+              </span>
+            </div>
+          ) : (
+            <div className="d-flex align-items-center gap-3">
+              {/* System Notices Bell */}
+              <Dropdown align="end">
               <Dropdown.Toggle
                 variant="light"
                 className="position-relative border-0 rounded-circle p-2 d-flex align-items-center justify-content-center"
@@ -131,25 +138,41 @@ const Header = () => {
               </Dropdown.Menu>
             </Dropdown>
           </div>
-        </Container>
-      </Navbar>
+        )}
+      </Container>
+    </Navbar>
 
-      {/* Notice Detail Modal */}
-      <Modal show={showNoticeModal} onHide={() => setShowNoticeModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="fs-6 fw-bold">{selectedNotice?.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p className="text-secondary">{selectedNotice?.content}</p>
-          <div className="text-muted small">
-            Đối tượng: <strong>{selectedNotice?.targetRole || "All"}</strong>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" size="sm" onClick={() => setShowNoticeModal(false)}>
-            Đóng
+    {/* Notice Detail Modal */}
+    <Modal show={showNoticeModal} onHide={() => setShowNoticeModal(false)} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className="fs-6 fw-bold">{selectedNotice?.title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p className="text-secondary">{selectedNotice?.content}</p>
+        <div className="text-muted small">
+          Đối tượng: <strong>{selectedNotice?.targetRole || "All"}</strong>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        {(selectedNotice?.title?.includes("Đề thi") ||
+          selectedNotice?.title?.includes("Mini Test") ||
+          selectedNotice?.title?.includes("Bài thi")) && (
+          <Button
+            variant="warning"
+            size="sm"
+            className="fw-bold text-dark rounded-pill px-3 shadow-sm"
+            onClick={() => {
+              setShowNoticeModal(false);
+              navigate("/student/quiz");
+            }}
+          >
+            🚀 Vào Phòng Thi Ngay
           </Button>
-        </Modal.Footer>
+        )}
+        <Button variant="secondary" size="sm" onClick={() => setShowNoticeModal(false)}>
+          Đóng
+        </Button>
+      </Modal.Footer>
       </Modal>
     </>
   );

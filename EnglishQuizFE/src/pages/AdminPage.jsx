@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import Header from "../components/common/Header";
 import Sidebar from "../components/common/Sidebar";
@@ -12,8 +13,39 @@ import SystemNotice from "../components/Admin/SystemNotice";
 import FeedbackManagement from "../components/Admin/FeedbackManagement";
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const getInitialTab = () => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[0] === "admin") {
+      return parts[1];
+    }
+    return localStorage.getItem("admin_active_tab") || "dashboard";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[0] === "admin") {
+      setActiveTab(parts[1]);
+      localStorage.setItem("admin_active_tab", parts[1]);
+    } else if (parts.length === 1 && parts[0] === "admin") {
+      const saved = localStorage.getItem("admin_active_tab") || "dashboard";
+      setActiveTab(saved);
+      if (saved !== "dashboard") {
+        navigate(`/admin/${saved}`, { replace: true });
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  const handleTabSelect = (tabKey) => {
+    setActiveTab(tabKey);
+    localStorage.setItem("admin_active_tab", tabKey);
+    navigate(`/admin/${tabKey === "dashboard" ? "" : tabKey}`);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -27,7 +59,7 @@ const AdminPage = () => {
         return <FeedbackManagement />;
       case "dashboard":
       default:
-        return <AdminDashboard onSelect={setActiveTab} />;
+        return <AdminDashboard onSelect={handleTabSelect} />;
     }
   };
 
@@ -37,7 +69,7 @@ const AdminPage = () => {
       <Sidebar
         role="admin"
         activeTab={activeTab}
-        onSelect={setActiveTab}
+        onSelect={handleTabSelect}
         onToggle={setIsSidebarOpen}
       />
 

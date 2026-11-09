@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Badge, Row, Col, InputGroup, Card, Tabs, Tab } from "react-bootstrap";
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaRandom, FaCheckSquare, FaClock } from "react-icons/fa";
 import axiosClient from "../../api/axiosClient";
+import ExamComposer from "../Teacher/ExamComposer";
 
 const ExamManagement = () => {
   const [exams, setExams] = useState([]);
   const [questionsList, setQuestionsList] = useState([]);
   const [topicsList, setTopicsList] = useState([]);
-  const [skillsList, setSkillsList] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -15,19 +15,6 @@ const ExamManagement = () => {
 
   // Form mode
   const [creationMode, setCreationMode] = useState("matrix"); // "matrix" | "manual"
-
-  // Matrix generation state
-  const [matrixData, setMatrixData] = useState({
-    title: "",
-    duration: 30,
-    type: "quiz",
-    level: "Mixed",
-    topic: "",
-    skill: "",
-    easyCount: 5,
-    mediumCount: 3,
-    hardCount: 2,
-  });
 
   // Manual generation state
   const [manualData, setManualData] = useState({
@@ -61,14 +48,12 @@ const ExamManagement = () => {
 
   const fetchMetadata = async () => {
     try {
-      const [qRes, tRes, sRes] = await Promise.allSettled([
+      const [qRes, tRes] = await Promise.allSettled([
         axiosClient.get("/questions"),
         axiosClient.get("/topics"),
-        axiosClient.get("/skills"),
       ]);
       if (qRes.status === "fulfilled") setQuestionsList(qRes.value.data || []);
       if (tRes.status === "fulfilled") setTopicsList(tRes.value.data || []);
-      if (sRes.status === "fulfilled") setSkillsList(sRes.value.data || []);
     } catch (err) {
       console.error("Metadata load error:", err);
     }
@@ -89,17 +74,6 @@ const ExamManagement = () => {
     } else {
       setEditingId(null);
       setCreationMode("matrix");
-      setMatrixData({
-        title: "",
-        duration: 30,
-        type: "quiz",
-        level: "Mixed",
-        topic: topicsList[0]?._id || "",
-        skill: "",
-        easyCount: 5,
-        mediumCount: 3,
-        hardCount: 2,
-      });
       setManualData({
         title: "",
         duration: 30,
@@ -112,30 +86,7 @@ const ExamManagement = () => {
     setShowModal(true);
   };
 
-  const handleMatrixSubmit = async (e) => {
-    e.preventDefault();
-    if (!matrixData.title) return;
 
-    try {
-      await axiosClient.post("/exams/matrix/generate", {
-        title: matrixData.title,
-        duration: Number(matrixData.duration),
-        type: matrixData.type,
-        level: matrixData.level,
-        topic: matrixData.topic || undefined,
-        skill: matrixData.skill || undefined,
-        easyCount: Number(matrixData.easyCount),
-        mediumCount: Number(matrixData.mediumCount),
-        hardCount: Number(matrixData.hardCount),
-      });
-
-      setShowModal(false);
-      fetchExams();
-    } catch (err) {
-      console.error("Matrix generate error:", err);
-      alert("Lỗi tạo đề thi ma trận: " + (err.response?.data?.message || err.message));
-    }
-  };
 
   const handleManualSubmit = async (e) => {
     e.preventDefault();
@@ -319,135 +270,15 @@ const ExamManagement = () => {
                   </span>
                 }
               >
-                <Form onSubmit={handleMatrixSubmit} className="d-flex flex-column gap-3 mt-3">
-                  <Form.Group>
-                    <Form.Label className="small fw-semibold text-muted">Tên đề thi</Form.Label>
-                    <Form.Control
-                      placeholder="Ví dụ: Đề Thi Thử TOEIC Full Test 01"
-                      value={matrixData.title}
-                      onChange={(e) => setMatrixData({ ...matrixData, title: e.target.value })}
-                      required
-                    />
-                  </Form.Group>
-
-                  <Row>
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label className="small fw-semibold text-muted">Thời lượng (Phút)</Form.Label>
-                        <Form.Control
-                          type="number"
-                          value={matrixData.duration}
-                          onChange={(e) => setMatrixData({ ...matrixData, duration: e.target.value })}
-                          required
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label className="small fw-semibold text-muted">Phân loại</Form.Label>
-                        <Form.Select
-                          value={matrixData.type}
-                          onChange={(e) => setMatrixData({ ...matrixData, type: e.target.value })}
-                        >
-                          <option value="quiz">Thi thử chuẩn (Quiz)</option>
-                          <option value="minitest">Mini Test ngắn</option>
-                          <option value="practice">Bài luyện tập</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label className="small fw-semibold text-muted">Chủ đề</Form.Label>
-                        <Form.Select
-                          value={matrixData.topic}
-                          onChange={(e) => setMatrixData({ ...matrixData, topic: e.target.value })}
-                        >
-                          <option value="">Tất cả chủ đề</option>
-                          {topicsList.map((t) => (
-                            <option key={t._id} value={t._id}>
-                              {t.name}
-                            </option>
-                          ))}
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label className="small fw-semibold text-muted">Kỹ năng</Form.Label>
-                        <Form.Select
-                          value={matrixData.skill}
-                          onChange={(e) => setMatrixData({ ...matrixData, skill: e.target.value })}
-                        >
-                          <option value="">Tất cả kỹ năng</option>
-                          {skillsList.map((s) => (
-                            <option key={s._id} value={s._id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-
-                  <div className="p-3 bg-light rounded-3 border">
-                    <Form.Label className="small fw-bold text-dark mb-2">
-                      Phân bổ ma trận câu hỏi theo độ khó:
-                    </Form.Label>
-                    <Row className="g-3">
-                      <Col md={4}>
-                        <Form.Group>
-                          <Form.Label className="small text-muted">Dễ (A1, A2, Easy)</Form.Label>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            value={matrixData.easyCount}
-                            onChange={(e) => setMatrixData({ ...matrixData, easyCount: e.target.value })}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={4}>
-                        <Form.Group>
-                          <Form.Label className="small text-muted">Trung bình (B1, B2, Medium)</Form.Label>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            value={matrixData.mediumCount}
-                            onChange={(e) => setMatrixData({ ...matrixData, mediumCount: e.target.value })}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={4}>
-                        <Form.Group>
-                          <Form.Label className="small text-muted">Khó (C1, C2, Hard)</Form.Label>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            value={matrixData.hardCount}
-                            onChange={(e) => setMatrixData({ ...matrixData, hardCount: e.target.value })}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <div className="small text-muted mt-2">
-                      Tổng số câu dự kiến:{" "}
-                      <strong>
-                        {Number(matrixData.easyCount) +
-                          Number(matrixData.mediumCount) +
-                          Number(matrixData.hardCount)}
-                      </strong>{" "}
-                      câu hỏi
-                    </div>
-                  </div>
-
-                  <div className="d-flex justify-content-end gap-2 mt-2">
-                    <Button variant="secondary" size="sm" onClick={() => setShowModal(false)}>
-                      Hủy
-                    </Button>
-                    <Button variant="warning" size="sm" type="submit" className="fw-bold text-dark">
-                      Sinh Đề Thi Tự Động
-                    </Button>
-                  </div>
-                </Form>
+                <div className="pt-2">
+                  <ExamComposer
+                    onSuccess={() => {
+                      setShowModal(false);
+                      fetchExams();
+                    }}
+                    onCancel={() => setShowModal(false)}
+                  />
+                </div>
               </Tab>
 
               <Tab

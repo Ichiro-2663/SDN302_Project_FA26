@@ -2,23 +2,13 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Card, Button, Badge, Modal, Form, ProgressBar } from "react-bootstrap";
 import {
   FaLayerGroup,
-  FaVolumeUp,
-  FaCheck,
-  FaTimes,
   FaPlus,
   FaTrash,
-  FaSyncAlt,
 } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
 import axiosClient from "../../api/axiosClient";
-
-const BOX_SCHEDULE = {
-  1: { name: "Hộp 1", interval: "Hàng ngày", delay: "1 ngày", color: "#ef4444" },
-  2: { name: "Hộp 2", interval: "Mỗi 3 ngày", delay: "3 ngày", color: "#f97316" },
-  3: { name: "Hộp 3", interval: "Hàng tuần", delay: "7 ngày", color: "#eab308" },
-  4: { name: "Hộp 4", interval: "Mỗi 2 tuần", delay: "14 ngày", color: "#3b82f6" },
-  5: { name: "Hộp 5", interval: "Thuần thục", delay: "30 ngày", color: "#10b981" },
-};
+import Flashcard3D from "./Flashcard3D";
+import { LEITNER_BOXES } from "../../constants/leitner";
 
 const Flashcards = () => {
   const { user } = useContext(AuthContext);
@@ -29,7 +19,6 @@ const Flashcards = () => {
   const [selectedBox, setSelectedBox] = useState("all");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Modal create
@@ -53,7 +42,6 @@ const Flashcards = () => {
       if (cardsRes.status === "fulfilled") setCards(cardsRes.value.data || []);
       if (topicsRes.status === "fulfilled") setTopics(topicsRes.value.data || []);
       setCurrentIdx(0);
-      setIsFlipped(false);
     } catch (err) {
       console.error("Flashcards fetch error:", err);
     } finally {
@@ -74,15 +62,6 @@ const Flashcards = () => {
 
   const currentCard = filteredCards[currentIdx];
 
-  const handleTTS = (text) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
   // Review flashcard (Leitner)
   const handleReview = async (isCorrect) => {
     if (!currentCard) return;
@@ -93,7 +72,6 @@ const Flashcards = () => {
       setCards(updatedCards);
 
       // Advance
-      setIsFlipped(false);
       if (currentIdx < filteredCards.length - 1) {
         setCurrentIdx(currentIdx + 1);
       } else {
@@ -174,7 +152,6 @@ const Flashcards = () => {
             onClick={() => {
               setSelectedBox("all");
               setCurrentIdx(0);
-              setIsFlipped(false);
             }}
           >
             Tất cả ({cards.length})
@@ -182,7 +159,7 @@ const Flashcards = () => {
 
           {[1, 2, 3, 4, 5].map((boxNum) => {
             const isSelected = selectedBox === String(boxNum);
-            const info = BOX_SCHEDULE[boxNum];
+            const info = LEITNER_BOXES[boxNum] || {};
             return (
               <Button
                 key={boxNum}
@@ -194,7 +171,6 @@ const Flashcards = () => {
                 onClick={() => {
                   setSelectedBox(String(boxNum));
                   setCurrentIdx(0);
-                  setIsFlipped(false);
                 }}
               >
                 <span
@@ -205,7 +181,7 @@ const Flashcards = () => {
                     background: info.color,
                   }}
                 />
-                <span>{info.name}</span>
+                <span>Hộp {boxNum} ({info.days}d)</span>
                 <Badge bg="secondary" pill style={{ fontSize: "11px" }}>
                   {boxCounts[boxNum]}
                 </Badge>
@@ -252,15 +228,6 @@ const Flashcards = () => {
               Thẻ {currentIdx + 1} / {filteredCards.length}
             </span>
             <div className="d-flex align-items-center gap-2">
-              <Badge
-                pill
-                style={{
-                  background: BOX_SCHEDULE[currentCard.box || 1]?.color,
-                  color: "#ffffff",
-                }}
-              >
-                Hộp {currentCard.box || 1} &bull; {BOX_SCHEDULE[currentCard.box || 1]?.interval}
-              </Badge>
               <Button
                 size="sm"
                 variant="light"
@@ -280,97 +247,38 @@ const Flashcards = () => {
             className="rounded-pill mb-4"
           />
 
-          {/* 3D Flip Card Container */}
-          <div
-            onClick={() => setIsFlipped(!isFlipped)}
-            style={{
-              minHeight: "320px",
-              cursor: "pointer",
-              perspective: "1000px",
-            }}
-          >
-            <Card
-              className="border-0 shadow-sm rounded-4 p-5 text-center d-flex flex-column justify-content-between h-100"
-              style={{
-                borderRadius: "24px",
-                background: isFlipped ? "#fffbeb" : "#ffffff",
-                border: isFlipped ? "2px dashed #f59e0b" : "1px solid #e2e8f0",
-                transition: "all 0.3s ease",
-                minHeight: "320px",
-              }}
-            >
-              {!isFlipped ? (
-                /* FRONT VIEW */
-                <div className="my-auto">
-                  <span className="badge bg-light text-muted border rounded-pill mb-3 px-3 py-1">
-                    Mặt trước &bull; Nhấp để lật thẻ
-                  </span>
-                  <h2 className="fw-bold text-dark mb-2">{currentCard.word}</h2>
-                  {currentCard.pronunciation && (
-                    <p className="text-muted fst-italic fs-6 mb-3">{currentCard.pronunciation}</p>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="outline-warning"
-                    className="rounded-circle p-2 text-dark mx-auto"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleTTS(currentCard.word);
-                    }}
-                    title="Phát âm"
-                  >
-                    <FaVolumeUp size={16} />
-                  </Button>
-                </div>
-              ) : (
-                /* BACK VIEW */
-                <div className="my-auto">
-                  <span className="badge bg-warning text-dark rounded-pill mb-3 px-3 py-1">
-                    Định nghĩa & Ví dụ
-                  </span>
-                  <h4 className="fw-bold text-dark mb-3 lh-base">{currentCard.definition}</h4>
-                  {currentCard.example && (
-                    <div className="bg-white p-3 rounded-3 shadow-sm border text-secondary small text-start mb-2">
-                      <div className="fw-bold text-dark mb-1">Ví dụ:</div>
-                      <div>"{currentCard.example}"</div>
-                    </div>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="link"
-                    className="text-warning text-decoration-none small mt-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleTTS(currentCard.example || currentCard.definition);
-                    }}
-                  >
-                    <FaVolumeUp /> Nghe đọc câu ví dụ
-                  </Button>
-                </div>
-              )}
-
-              <div className="text-muted small mt-3">
-                <FaSyncAlt size={12} className="me-1" /> Bấm vào thẻ để lật xem mặt sau
-              </div>
-            </Card>
+          {/* New 3D Flip Card Component from Kombai */}
+          <div className="d-flex justify-content-center">
+            <Flashcard3D
+              card={currentCard}
+              onForget={() => handleReview(false)}
+              onRemember={() => handleReview(true)}
+              disabled={loading}
+            />
           </div>
 
-          {/* Leitner Evaluation Buttons */}
-          <div className="d-flex gap-3 mt-4">
+          {/* Card Carousel Navigation Controls */}
+          <div className="d-flex justify-content-between align-items-center mt-3 px-2">
             <Button
-              variant="outline-danger"
-              className="flex-grow-1 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2"
-              onClick={() => handleReview(false)}
+              variant="outline-secondary"
+              size="sm"
+              className="rounded-pill px-3"
+              disabled={currentIdx === 0}
+              onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
             >
-              <FaTimes /> Quên (Về Hộp 1)
+              &larr; Thẻ trước
             </Button>
-
+            <span className="text-muted small">
+              Nhấp vào thẻ hoặc phím <kbd>Space</kbd> để lật
+            </span>
             <Button
-              variant="success"
-              className="flex-grow-1 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2"
-              onClick={() => handleReview(true)}
+              variant="outline-secondary"
+              size="sm"
+              className="rounded-pill px-3"
+              disabled={currentIdx >= filteredCards.length - 1}
+              onClick={() => setCurrentIdx((i) => Math.min(filteredCards.length - 1, i + 1))}
             >
-              <FaCheck /> Nhớ Tốt (+1 Hộp)
+              Thẻ kế tiếp &rarr;
             </Button>
           </div>
         </div>

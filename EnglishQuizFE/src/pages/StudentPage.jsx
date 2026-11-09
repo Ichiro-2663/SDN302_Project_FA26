@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import Header from "../components/common/Header";
 import Sidebar from "../components/common/Sidebar";
@@ -15,47 +16,83 @@ import Profile from "../components/User/Profile";
 import UserFeedback from "../components/User/UserFeedback";
 
 const StudentPage = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Resolve initial tab from URL or localStorage
+  const getInitialTab = () => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[0] === "student") {
+      return parts[1];
+    }
+    return localStorage.getItem("student_active_tab") || "dashboard";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isExamLocked, setIsExamLocked] = useState(false);
+
+  // Sync tab state when URL changes (supports browser reload & back/forward)
+  useEffect(() => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[0] === "student") {
+      setActiveTab(parts[1]);
+      localStorage.setItem("student_active_tab", parts[1]);
+    } else if (parts.length === 1 && parts[0] === "student") {
+      const saved = localStorage.getItem("student_active_tab") || "dashboard";
+      setActiveTab(saved);
+      if (saved !== "dashboard") {
+        navigate(`/student/${saved}`, { replace: true });
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  const handleTabSelect = (tabKey) => {
+    setActiveTab(tabKey);
+    localStorage.setItem("student_active_tab", tabKey);
+    navigate(`/student/${tabKey === "dashboard" ? "" : tabKey}`);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case "practice":
-        return <Practice />;
+        return <Practice key="practice" />;
       case "quiz":
-        return <Quiz type="quiz" />;
+        return <Quiz key="quiz" type="quiz" onExamLockChange={setIsExamLocked} />;
       case "minitest":
-        return <Quiz type="minitest" />;
+        return <Quiz key="minitest" type="minitest" onExamLockChange={setIsExamLocked} />;
       case "flashcards":
-        return <Flashcards />;
+        return <Flashcards key="flashcards" />;
       case "bookmarks":
-        return <Bookmarks />;
+        return <Bookmarks key="bookmarks" />;
       case "history":
-        return <History />;
+        return <History key="history" />;
       case "feedback":
-        return <UserFeedback />;
+        return <UserFeedback key="feedback" />;
       case "profile":
-        return <Profile />;
+        return <Profile key="profile" />;
       case "dashboard":
       default:
-        return <UserDashboard setActiveTab={setActiveTab} />;
+        return <UserDashboard setActiveTab={handleTabSelect} />;
     }
   };
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f8fafc" }}>
-      {/* Sidebar */}
-      <Sidebar
-        role="student"
-        activeTab={activeTab}
-        onSelect={setActiveTab}
-        onToggle={setIsSidebarOpen}
-      />
+      {/* Sidebar: Completely hidden during Exam Room Lockdown to prevent leaving */}
+      {!isExamLocked && (
+        <Sidebar
+          role="student"
+          activeTab={activeTab}
+          onSelect={handleTabSelect}
+          onToggle={setIsSidebarOpen}
+        />
+      )}
 
       {/* Main Content Area */}
       <div
         style={{
-          marginLeft: isSidebarOpen ? "240px" : "70px",
+          marginLeft: isExamLocked ? "0px" : isSidebarOpen ? "240px" : "70px",
           transition: "margin-left 0.3s ease",
           width: "100%",
           minHeight: "100vh",
@@ -63,13 +100,13 @@ const StudentPage = () => {
           flexDirection: "column",
         }}
       >
-        <Header />
+        <Header isExamLocked={isExamLocked} />
 
         <Container fluid className="py-4 px-4 px-md-5 flex-grow-1">
           {renderContent()}
         </Container>
 
-        <Footer />
+        {!isExamLocked && <Footer />}
       </div>
     </div>
   );
