@@ -1,7 +1,16 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectRoute from "./components/common/ProtectRoute";
+
+// Pages
 import Homepage from "./pages/Homepage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import StudentPage from "./pages/StudentPage";
+import TeacherPage from "./pages/TeacherPage";
+import AdminPage from "./pages/AdminPage";
+
 import "./styles/theme.css";
 
 function App() {
@@ -9,44 +18,28 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Trang chủ do Kombai thiết kế */}
+          {/* Public Routes */}
           <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-          {/* Các Route cho các tính năng tiếp theo */}
-          <Route path="/login" element={
-            <div className="container py-5 text-center">
-              <h3>Trang Đăng Nhập (Login)</h3>
-              <p className="text-muted">Đang được hoàn thiện theo phong cách mới của Kombai.</p>
-            </div>
-          } />
+          {/* Protected Route: Student Portal */}
+          <Route element={<ProtectRoute allowedRoles={["Student", "Admin"]} />}>
+            <Route path="/student/*" element={<StudentPage />} />
+          </Route>
 
-          <Route path="/register" element={
-            <div className="container py-5 text-center">
-              <h3>Trang Đăng Ký (Register)</h3>
-              <p className="text-muted">Đang được hoàn thiện theo phong cách mới của Kombai.</p>
-            </div>
-          } />
+          {/* Protected Route: Teacher Studio */}
+          <Route element={<ProtectRoute allowedRoles={["Teacher", "Admin"]} />}>
+            <Route path="/teacher/*" element={<TeacherPage />} />
+          </Route>
 
-          <Route path="/student/*" element={
-            <div className="container py-5 text-center">
-              <h3>Không Gian Học Viên (Student Portal)</h3>
-              <p className="text-muted">Dev 1 đang xây dựng với Kombai và Antigravity.</p>
-            </div>
-          } />
+          {/* Protected Route: Admin Workspace */}
+          <Route element={<ProtectRoute allowedRoles={["Admin"]} />}>
+            <Route path="/admin/*" element={<AdminPage />} />
+          </Route>
 
-          <Route path="/teacher/*" element={
-            <div className="container py-5 text-center">
-              <h3>Studio Giáo Viên (Teacher Studio)</h3>
-              <p className="text-muted">Dev 2 đang xây dựng với Kombai và Antigravity.</p>
-            </div>
-          } />
-
-          <Route path="/admin/*" element={
-            <div className="container py-5 text-center">
-              <h3>Không Gian Quản Trị (Admin Workspace)</h3>
-              <p className="text-muted">Dev 3 đang xây dựng với Kombai và Antigravity.</p>
-            </div>
-          } />
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

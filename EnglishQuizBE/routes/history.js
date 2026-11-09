@@ -3,17 +3,47 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const History = require("../models/History");
 
-// SUBMIT
+// SUBMIT HISTORY DIRECT
 router.post("/", async (req, res) => {
   try {
     const result = await History.create(req.body);
-    res.json(result);
+    res.status(201).json(result);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
-// GET HISTORY
+// GET SINGLE HISTORY ATTEMPT DETAILS
+router.get("/detail/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid history ID" });
+    }
+    const data = await History.findById(id)
+      .populate("userId", "name email role")
+      .populate({
+        path: "examId",
+        populate: [
+          {
+            path: "questions",
+            populate: [
+              { path: "topic" },
+              { path: "skill" },
+              { path: "certificate" }
+            ]
+          },
+          { path: "topic" }
+        ]
+      });
+    if (!data) return res.status(404).json({ success: false, message: "History record not found" });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET HISTORY FOR SPECIFIC USER
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -21,6 +51,7 @@ router.get("/:userId", async (req, res) => {
       return res.json([]);
     }
     const data = await History.find({ userId })
+      .sort({ createdAt: -1 })
       .populate({
         path: "examId",
         populate: [
@@ -37,15 +68,16 @@ router.get("/:userId", async (req, res) => {
       });
     res.json(data);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// GET ALL HISTORY
+// GET ALL HISTORY (ADMIN / TEACHER)
 router.get("/", async (req, res) => {
   try {
     const data = await History.find()
-      .populate("userId")
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email role school")
       .populate({
         path: "examId",
         populate: [
@@ -62,7 +94,7 @@ router.get("/", async (req, res) => {
       });
     res.json(data);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -70,10 +102,10 @@ router.get("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const deleted = await History.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "History record not found" });
-    res.json({ message: "History record deleted successfully" });
+    if (!deleted) return res.status(404).json({ success: false, message: "History record not found" });
+    res.json({ success: true, message: "History record deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

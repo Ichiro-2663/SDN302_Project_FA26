@@ -31,6 +31,8 @@ app.use("/skills", require("./routes/skill"));
 app.use("/certificates", require("./routes/certificate"));
 app.use("/flashcards", require("./routes/flashcard"));
 app.use("/bookmarks", require("./routes/bookmark"));
+app.use("/notices", require("./routes/notice"));
+app.use("/feedbacks", require("./routes/feedback"));
 
 // 404 Handler
 app.use((req, res) => {

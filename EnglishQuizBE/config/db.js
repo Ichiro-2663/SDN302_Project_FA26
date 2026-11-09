@@ -1,13 +1,16 @@
 ﻿const mongoose = require("mongoose");
 
-const connectDB = async () => {
+const connectDB = async (customUri) => {
   try {
-    const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/SDN302_project_FA26";
-    await mongoose.connect(mongoUri);
-    console.log([Database] MongoDB Connected: );
+    const mongoUri = customUri || process.env.MONGO_URI || "mongodb://localhost:27017/SDN302_project_FA26";
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+    console.log(`[Database] MongoDB Connected: ${mongoUri}`);
   } catch (err) {
     console.error("[Database] MongoDB Connection Error:", err.message);
-    process.exit(1);
+    if (process.env.NODE_ENV !== "test") {
+      // Allow fallback / retry rather than immediate hard exit
+      console.warn("[Database] Running without active database connection. Some routes may fail until MongoDB is started.");
+    }
   }
 };
 
