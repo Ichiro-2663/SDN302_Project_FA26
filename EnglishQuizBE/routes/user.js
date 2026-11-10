@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // GET ALL USERS
 router.get("/", async (req, res) => {
@@ -53,6 +54,35 @@ router.put("/change-password/:id", async (req, res) => {
 // UPDATE USER
 router.put("/:id", async (req, res) => {
   try {
+    const targetUserId = req.params.id;
+
+    // Resolve caller user id from Authorization header or body
+    let callerId = req.body?.adminId;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_jwt_secret_sdn302_fa26");
+        callerId = decoded.id;
+      } catch (e) {}
+    }
+
+    // Check if caller is trying to lock or downgrade themselves
+    if (callerId && String(callerId) === String(targetUserId)) {
+      if (req.body.status === "Disabled") {
+        return res.status(400).json({
+          success: false,
+          message: "Admin không thể tự khóa tài khoản của chính mình.",
+        });
+      }
+      if (req.body.role && req.body.role !== "Admin") {
+        return res.status(400).json({
+          success: false,
+          message: "Admin không thể tự hạ quyền Admin của chính mình.",
+        });
+      }
+    }
+
     const updateFields = {};
     const allowedFields = ["name", "email", "role", "age", "address", "school", "status"];
     allowedFields.forEach((field) => {
@@ -62,10 +92,12 @@ router.put("/:id", async (req, res) => {
     });
 
     const updated = await User.findByIdAndUpdate(
-      req.params.id,
+      targetUserId,
       updateFields,
       { new: true }
     ).select("-password");
+
+    if (!updated) return res.status(404).json({ message: "User not found" });
 
     res.json(updated);
   } catch (err) {
@@ -76,15 +108,41 @@ router.put("/:id", async (req, res) => {
 // DISABLE USER (changed from DELETE)
 router.delete("/:id", async (req, res) => {
   try {
-    const updated = await User.findByIdAndUpdate(
-      req.params.id,
-      { status: "Disabled" },
-      { new: true }
-    ).select("-password");
+    const targetUserId = req.params.id;
+
+    // Resolve caller user id from Authorization header or body
+    let callerId = req.body?.adminId;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_jwt_secret_sdn302_fa26");
+        callerId = decoded.id;
+      } catch (e) {}
+    }
+
+    // Check if caller is trying to disable themselves
+    if (callerId && String(callerId) === String(targetUserId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin không thể tự khóa tài khoản của chính mình.",
+      });
+    }
+
+    const targetUser = await User.findById(targetUserId);
+    if (!targetUser) return res.status(404).json({ message: "User not found" });
+
+    if (targetUser.role === "Admin" && callerId && String(callerId) === String(targetUserId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin không thể tự khóa tài khoản của chính mình.",
+      });
+    }
+
+    targetUser.status = "Disabled";
+    await targetUser.save();
     
-    if (!updated) return res.status(404).json({ message: "User not found" });
-    
-    res.json({ message: "Disabled", user: updated });
+    res.json({ message: "Disabled", user: targetUser });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

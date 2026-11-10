@@ -59,6 +59,23 @@ const QuizReview = ({
     }
   };
 
+  // Format review answer nicely
+  const formatReviewAnswer = (val, detail) => {
+    if (val === undefined || val === null || val === "") return "(Bỏ trống / Chưa làm)";
+    if ((detail.questionType === "MultipleChoice" || detail.questionType === "Multiple Choice") && Array.isArray(detail.options)) {
+      const idx = Number(val);
+      if (!isNaN(idx) && detail.options[idx] !== undefined) {
+        const letter = String.fromCharCode(65 + idx);
+        const optText = typeof detail.options[idx] === "object" ? detail.options[idx]?.text : detail.options[idx];
+        return `${letter}. ${optText}`;
+      }
+    }
+    if (detail.questionType === "TrueFalse" || detail.questionType === "True/False") {
+      return String(val).toLowerCase() === "true" ? "True (Đúng)" : "False (Sai)";
+    }
+    return String(val);
+  };
+
   return (
     <div className="quiz-review-container">
       {/* Top Navigation Action Bar */}
@@ -292,9 +309,7 @@ const QuizReview = ({
                       Lựa chọn của bạn:
                     </span>
                     <strong className={isCorrect ? "text-success" : "text-danger"}>
-                      {detail.userAnswer !== undefined && detail.userAnswer !== null && detail.userAnswer !== ""
-                        ? String(detail.userAnswer)
-                        : "(Bỏ trống / Chưa làm)"}
+                      {formatReviewAnswer(detail.userAnswer, detail)}
                     </strong>
                   </div>
                 </Col>
@@ -304,7 +319,9 @@ const QuizReview = ({
                     <span className="text-muted small d-block mb-1 fw-semibold">
                       Đáp án chính xác:
                     </span>
-                    <strong className="text-success">{String(detail.correctAnswer)}</strong>
+                    <strong className="text-success">
+                      {formatReviewAnswer(detail.correctAnswer, detail)}
+                    </strong>
                   </div>
                 </Col>
               </Row>

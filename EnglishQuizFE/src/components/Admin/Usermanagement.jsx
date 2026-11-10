@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Table, Button, Badge, Form, Row, Col, Card, InputGroup, Modal } from "react-bootstrap";
 import { FaSearch, FaUserShield, FaUserGraduate, FaChalkboardTeacher, FaEdit } from "react-icons/fa";
+import { AuthContext } from "../../context/AuthContext";
 import axiosClient from "../../api/axiosClient";
 
 const UserManagement = () => {
+  const { user: currentUser } = useContext(AuthContext);
+  const currentUserId = currentUser?._id || localStorage.getItem("id");
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState("All");
@@ -31,6 +35,12 @@ const UserManagement = () => {
   };
 
   const handleToggleStatus = async (user) => {
+    const isSelf = String(user._id) === String(currentUserId);
+    if (isSelf) {
+      alert("Bạn không thể tự khóa tài khoản của chính mình!");
+      return;
+    }
+
     const nextStatus = user.status === "Disabled" ? "Active" : "Disabled";
     const action = nextStatus === "Disabled" ? "vô hiệu hóa" : "kích hoạt lại";
 
@@ -44,6 +54,7 @@ const UserManagement = () => {
         fetchUsers();
       } catch (err) {
         console.error("Toggle status error:", err);
+        alert(err.response?.data?.message || "Lỗi cập nhật trạng thái người dùng");
       }
     }
   };
@@ -56,12 +67,18 @@ const UserManagement = () => {
 
   const handleSaveRole = async () => {
     if (!selectedUser) return;
+    const isSelf = String(selectedUser._id) === String(currentUserId);
+    if (isSelf && targetRole !== "Admin") {
+      alert("Bạn không thể tự hạ quyền Admin của chính mình!");
+      return;
+    }
     try {
       await axiosClient.put(`/users/${selectedUser._id}`, { role: targetRole });
       setShowRoleModal(false);
       fetchUsers();
     } catch (err) {
       console.error("Update role error:", err);
+      alert(err.response?.data?.message || "Lỗi cập nhật vai trò người dùng");
     }
   };
 
@@ -179,10 +196,18 @@ const UserManagement = () => {
               <tbody>
                 {filteredUsers.map((u, idx) => {
                   const isDisabled = u.status === "Disabled";
+                  const isSelf = String(u._id) === String(currentUserId);
                   return (
-                    <tr key={u._id}>
+                    <tr key={u._id} className={isSelf ? "table-light" : ""}>
                       <td className="text-muted small">{idx + 1}</td>
-                      <td className="fw-bold text-dark">{u.name}</td>
+                      <td className="fw-bold text-dark">
+                        {u.name}
+                        {isSelf && (
+                          <Badge bg="primary" pill className="ms-2 small px-2">
+                            Bạn
+                          </Badge>
+                        )}
+                      </td>
                       <td className="small text-muted">{u.email}</td>
                       <td>{getRoleBadge(u.role)}</td>
                       <td className="small text-secondary">{u.school || "-"}</td>
@@ -200,19 +225,28 @@ const UserManagement = () => {
                             size="sm"
                             variant="outline-secondary"
                             className="rounded-pill px-2 py-1 small"
+                            disabled={isSelf}
                             onClick={() => handleOpenRoleModal(u)}
-                            title="Phân quyền vai trò"
+                            title={isSelf ? "Bạn không thể tự đổi vai trò của chính mình" : "Phân quyền vai trò"}
                           >
                             <FaEdit size={11} className="me-1" /> Vai trò
                           </Button>
 
                           <Button
                             size="sm"
-                            variant={isDisabled ? "success" : "outline-danger"}
+                            variant={isSelf ? "light" : isDisabled ? "success" : "outline-danger"}
                             className="rounded-pill px-2 py-1 small"
+                            disabled={isSelf}
                             onClick={() => handleToggleStatus(u)}
+                            title={
+                              isSelf
+                                ? "Không thể tự khóa tài khoản của chính mình"
+                                : isDisabled
+                                ? "Mở khóa tài khoản"
+                                : "Khóa tài khoản"
+                            }
                           >
-                            {isDisabled ? "Mở khóa" : "Khóa"}
+                            {isSelf ? "Chính bạn" : isDisabled ? "Mở khóa" : "Khóa"}
                           </Button>
                         </div>
                       </td>

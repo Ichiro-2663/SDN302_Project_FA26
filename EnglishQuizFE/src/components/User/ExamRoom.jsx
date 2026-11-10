@@ -97,6 +97,21 @@ const ExamRoom = ({
           }
         }
       }
+
+      // Keys T, F to pick True / False
+      if (
+        currentQ &&
+        (currentQ.questionType === "TrueFalse" ||
+          currentQ.questionType === "True/False" ||
+          currentQ.questionType === "True False")
+      ) {
+        const key = e.key.toUpperCase();
+        if (key === "T") {
+          onSelectAnswer(currentQ._id, "true");
+        } else if (key === "F") {
+          onSelectAnswer(currentQ._id, "false");
+        }
+      }
     },
     [currentIdx, totalQuestions, onSelectIndex, currentQ, onSelectAnswer]
   );
@@ -262,7 +277,8 @@ const ExamRoom = ({
 
               {/* MULTIPLE CHOICE TYPE */}
               {(currentQ.questionType === "Multiple Choice" ||
-                currentQ.questionType === "MultipleChoice") && (
+                currentQ.questionType === "MultipleChoice" ||
+                (!currentQ.questionType && currentQ.options && currentQ.options.length > 0)) && (
                 <div className="exam-options-list mb-4">
                   {(currentQ.options || []).map((opt, optIdx) => {
                     const letter = String.fromCharCode(65 + optIdx);
@@ -286,18 +302,55 @@ const ExamRoom = ({
                 </div>
               )}
 
+              {/* TRUE / FALSE TYPE */}
+              {(currentQ.questionType === "TrueFalse" ||
+                currentQ.questionType === "True/False" ||
+                currentQ.questionType === "True False") && (
+                <div className="d-flex gap-3 mb-4">
+                  {[
+                    { label: "✓ True (Đúng)", val: "true", key: "T" },
+                    { label: "✗ False (Sai)", val: "false", key: "F" },
+                  ].map((item) => {
+                    const isSelected =
+                      String(userAnswers[currentQ._id] || "").trim().toLowerCase() === item.val;
+                    return (
+                      <div
+                        key={item.val}
+                        className={`exam-choice-item flex-grow-1 text-center py-3 fw-bold ${
+                          isSelected ? "selected" : ""
+                        }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => onSelectAnswer(currentQ._id, item.val)}
+                      >
+                        <span className="choice-letter-badge me-2">{item.key}</span>
+                        <span className="choice-text">{item.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {/* FILL IN THE BLANK TYPE */}
-              {currentQ.questionType === "Fill in the Blank" && (
+              {(currentQ.questionType === "FillInBlank" ||
+                currentQ.questionType === "Fill in the Blank" ||
+                currentQ.questionType === "FillBlank" ||
+                (!currentQ.questionType && (!currentQ.options || currentQ.options.length === 0) && (!currentQ.matchingPairs || currentQ.matchingPairs.length === 0))) && (
                 <div className="mb-4">
-                  <p className="text-muted small mb-2">Nhập từ/cụm từ còn thiếu vào ô trống:</p>
+                  <p className="text-muted small mb-2 fw-semibold">
+                    ✍️ Nhập từ hoặc cụm từ còn thiếu vào ô trống dưới đây:
+                  </p>
                   <Form.Control
                     type="text"
-                    placeholder="Gõ đáp án của bạn tại đây..."
-                    value={userAnswers[currentQ._id] || ""}
+                    placeholder="Gõ đáp án của bạn tại đây (VD: cat, cars...)..."
+                    value={userAnswers[currentQ._id] !== undefined ? userAnswers[currentQ._id] : ""}
                     onChange={(e) => onSelectAnswer(currentQ._id, e.target.value)}
-                    className="py-3 px-3 fs-6 rounded-3 border-2"
-                    style={{ borderColor: "#cbd5e1" }}
+                    className="py-3 px-3 fs-6 rounded-3 border-2 shadow-sm"
+                    style={{ borderColor: "#ea580c" }}
+                    autoComplete="off"
                   />
+                  <div className="form-text text-muted mt-2 small">
+                    Gợi ý: Nhập câu trả lời bằng chữ thường theo đúng yêu cầu đề bài.
+                  </div>
                 </div>
               )}
 
@@ -358,9 +411,20 @@ const ExamRoom = ({
 
                 {/* Keyboard Shortcuts Hint in Center */}
                 <div className="d-none d-md-flex align-items-center gap-2 text-muted small user-select-none">
-                  <span>Phím</span>
-                  <span className="kbd-pill">A</span> - <span className="kbd-pill">D</span>
-                  <span>để chọn,</span>
+                  {currentQ && (currentQ.questionType === "Multiple Choice" || currentQ.questionType === "MultipleChoice") && (
+                    <>
+                      <span>Phím</span>
+                      <span className="kbd-pill">A</span> - <span className="kbd-pill">D</span>
+                      <span>để chọn,</span>
+                    </>
+                  )}
+                  {currentQ && (currentQ.questionType === "TrueFalse" || currentQ.questionType === "True/False" || currentQ.questionType === "True False") && (
+                    <>
+                      <span>Phím</span>
+                      <span className="kbd-pill">T</span> / <span className="kbd-pill">F</span>
+                      <span>để chọn,</span>
+                    </>
+                  )}
                   <span className="kbd-pill">&larr;</span> <span className="kbd-pill">&rarr;</span>
                   <span>để chuyển câu</span>
                 </div>
