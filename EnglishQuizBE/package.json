@@ -19,6 +19,8 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "docx": "^9.15.3",
+    "marked": "^18.2.0",
     "nodemon": "^3.1.0"
   }
 }
